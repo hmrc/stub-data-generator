@@ -9,10 +9,10 @@ scala> import org.scalacheck._
 import org.scalacheck._
 
 scala> val personName = Gen.alphaStr
-personName: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@6730d2d0
+personName: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@1fc45a6c
 
 scala> personName.sample.foreach(println)
-zzClzboiogjGjjbrmgpgbBdh
+gnxzpSzqfxmdCkpmlgEtgjfimpqrbcpyBjDcodowynlzdrpCYSfpgjhbwlztfpUhtxzejXBxonotlobqrubjEqhfpwzoflxzmtm
 ```
 
 We have a couple of problems with the test data that is
