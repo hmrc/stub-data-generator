@@ -14,7 +14,6 @@ You will now be able to start using ScalaCheck. For example:
 
 ```tut
 import org.scalacheck._
-import org.scalacheck._
 
 val personName = Gen.alphaStr
 personName.sample.foreach(println)
@@ -28,11 +27,8 @@ We would also like to be able to recreate data on demand. ScalaCheck will produc
 
 ```tut
 import org.scalacheck._
-import org.scalacheck._
 
 val personName = Gen.alphaStr
-personName: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@48efc7a6
-
 personName.sample.foreach(println)
 ```
 
@@ -65,7 +61,10 @@ name.sample.foreach(println)
 We can generate surnames in a similar fashion:
 
 ```tut
-scala> val lastname = Gen.surname
+import org.scalacheck._
+import hmrc.smartstub._
+
+val lastname = Gen.surname
 lastname.sample.foreach{println}
 lastname.sample.foreach{println}
 lastname.sample.foreach{println}
@@ -74,7 +73,10 @@ lastname.sample.foreach{println}
 These meet the requirement that the data that is generated is plausible, but using this method the data is not repeatable. If the console is restarted and another surname is generated:
 
 ```tut
-scala> val lastname = Gen.surname
+import org.scalacheck._
+import hmrc.smartstub._
+
+val lastname = Gen.surname
 lastname.sample.foreach{println}
 ```
 
@@ -83,6 +85,9 @@ The surnames generated will be different.
 How can we ensure that the same names are generated on demand? We can use the ``seeded`` method rather than the ```sample``` method:
 
 ```tut
+import org.scalacheck._
+import hmrc.smartstub._
+
 val name = Gen.forename
 name.seeded(1L).foreach{println}
 name.seeded(2L).foreach{println}
@@ -95,7 +100,6 @@ Even if the console is restarted, ``seeded(2L)``  will always return "Isaiha":
 import org.scalacheck._
 import hmrc.smartstub._
 
-
 val name = Gen.forename
 name.seeded(2L).foreach{println}
 ```
@@ -103,6 +107,9 @@ name.seeded(2L).foreach{println}
 This leads to an important difference when generating a collection of names. If we want each one to be random, the sample method has to be called for each one, and each time it will give an arbitrary answer:
 
 ```tut
+import org.scalacheck._
+import hmrc.smartstub._
+
 val randomNames = (1 to 5).map{x => name.sample.get}
 val moreRandomNames = (1 to 5).map{x => name.sample.get}
 ```
@@ -110,6 +117,9 @@ val moreRandomNames = (1 to 5).map{x => name.sample.get}
 But if we want to generate the same collection of names each time, we have to use ```seeded``` with the same inputs:
 
 ```scala
+import org.scalacheck._
+import hmrc.smartstub._
+
 val seededNames = (1 to 5).map{x => name.seeded(x.toLong).get}
 val moreSeededNames = (1 to 5).map{x => name.seeded(x.toLong).get}
 ```

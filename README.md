@@ -1,6 +1,6 @@
 # Smart Stub Generator (a.k.a. The Font of Infinite Nonsense) 
 
-**smart-stub-generator** is a tool to create data for testing.   It is intended for use within HMRC to help the 'stub' services — microservices that mimic the interfaces of production backend systems. 
+**smart-stub-generator** is a tool to create data for testing.  It is intended for use within HMRC to help the 'stub' services — microservices that mimic the interfaces of production backend systems. 
 
 The data the generator produces is intended to be plausible but fake eliminating the need to either manually craft test records or take real records and anonymize them. For example when generating names, the names will look real rather than random strings.
 
@@ -21,3 +21,9 @@ addSbtPlugin("hmrc" %% "stub-data-generator" % "0.1.0")
 4. [Enumerations and Patterns](docs/4-Enumerations.md)
 5. [Mutable Data](docs/5-MutatingData.md)
 6. [Simple Usage](docs/RichGen.md)
+     1	[Generating simple data](docs/1-ScalaCheckPrimer.md)
+     2	[Procedurally generating data](docs/2-ProceduralGeneration.md)
+     3	[Composing data](docs/3-ComposingData.md)
+     4	[Enumerations and Patterns](docs/4-Enumerations.md)
+     5	[Mutable Data](docs/5-MutatingData.md)
+     6	[Simple Usage](docs/RichGen.md)
