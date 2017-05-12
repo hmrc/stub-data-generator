@@ -44,6 +44,7 @@ The stub generator addresses both of these issues. In order to try it, you need 
 
 ```sh
 $ echo 'libraryDependencies += "hmrc" %% "stub-data-generator" % "0.1.0"' >> build.sbt
+
 ```
 
 (Note the use of the ```>>``` in this command, it appends text to a file.) 

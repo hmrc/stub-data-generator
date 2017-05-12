@@ -1,18 +1,16 @@
-package hmrc.smartstub.enumerable
+package hmrc.smartstub
 
 import org.scalatest.prop.Checkers
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Prop._
 import org.scalatest.FlatSpec
 
-import instances._
-import Enumerable.ops._
-
-class SetSpec extends FlatSpec with Checkers {
+class EnumerableSpec extends FlatSpec with Checkers {
 
   "A Nino" should "convert back and from a Long unchanged" in {
+    import Enumerable.instances.ninoEnum
     check{(a: Long) =>
-      val t = a.abs % 17576000000L
-      t == Enumerable[Nino].to(t).from}
+      val t = {a % ninoEnum.size}.abs
+      t == ninoEnum.apply(t).asLong}
   }
 }

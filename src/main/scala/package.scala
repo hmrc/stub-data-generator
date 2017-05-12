@@ -4,7 +4,11 @@ import org.scalacheck._
 
 import scala.language.implicitConversions
 
-package object smartstub extends Enumerable.ToEnumerableOps {
+package object smartstub
+    extends Enumerable.ToEnumerableOps
+    with ToLong.ToToLongOps
+    with FromLong.ToFromLongOps
+{
   implicit def genToRich[A](g: Gen[A]): RichGen[A] = RichGen(g)
 
   implicit class AdvGen(
