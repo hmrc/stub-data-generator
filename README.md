@@ -1,8 +1,10 @@
 # Smart Stub Generator (a.k.a. The Font of Infinite Nonsense) 
 
-**smart-stub-generator** is a tool to facilitate the creation of data for testing. It is named as such because it is intended for use within HMRC to help the 'stub' services - those that mimic the interfaces of production backend systems. 
+**smart-stub-generator** is a tool to create data for testing.   It is intended for use within HMRC to help the 'stub' services — microservices that mimic the interfaces of production backend systems. 
 
-The stub generator can be used to create all sorts of plausible, but fake data eliminating the need to manually craft test records or pseudonymise real records. It is built for use by HMRC within Play application controllers, but can be used as easily on the REPL or backed by a RDBMS. 
+The data the generator produces is intended to be plausible but fake eliminating the need to either manually craft test records or take real records and anonymize them. For example when generating names, the names will look real rather than random strings.
+
+The library is built for use within Scala Play 2.5 application controllers, but can be used as easily on the REPL or backed by a RDBMS. 
 
 ## SBT Project Setup
 
