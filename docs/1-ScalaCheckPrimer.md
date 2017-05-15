@@ -17,10 +17,10 @@ scala> import org.scalacheck._
 import org.scalacheck._
 
 scala> val personName = Gen.alphaStr
-personName: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@37779155
+personName: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@2475a34b
 
 scala> personName.sample.foreach(println)
-vibrevfwxqoNgpdlgkayzjnndwluyrmgpqbxomopz
+cbxqhiyzcNjdzplfvagdpuzvysuXcIQahndfSrswzthceu
 ```
 
 This is ideal for producing tests with the intent of stressing our code since the strings that are produced are the kind of names that we would not normally use. They exercise the code in the presence of really unusual names (for example names hundreds of characters long, or names with punctuation in them).
@@ -34,17 +34,16 @@ scala> import org.scalacheck._
 import org.scalacheck._
 
 scala> val personName = Gen.alphaStr
-personName: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@5aec6df1
+personName: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@43608d2d
 
 scala> personName.sample.foreach(println)
-cshieddrkpknvjmBdGuLx
+igrzXkqev
 ```
 
 The stub generator addresses both of these issues. In order to try it, you need to add the library dependancy to the build.sbt file:
 
 ```sh
 $ echo 'libraryDependencies += "hmrc" %% "stub-data-generator" % "0.1.0"' >> build.sbt
-
 ```
 
 (Note the use of the ```>>``` in this command, it appends text to a file.) 
@@ -65,16 +64,16 @@ scala> import hmrc.smartstub._
 import hmrc.smartstub._
 
 scala> val name = Gen.forename
-name: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@5a2d3ca5
+name: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@6e374b40
 
 scala> name.sample.foreach(println)
-Luke
+Elijah
 
 scala> name.sample.foreach(println)
-Oliver
+Addison
 
 scala> name.sample.foreach(println)
-Eli
+Amelia
 ```
 
 We can generate surnames in a similar fashion:
@@ -87,16 +86,16 @@ scala> import hmrc.smartstub._
 import hmrc.smartstub._
 
 scala> val lastname = Gen.surname
-lastname: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$1@7d203a06
+lastname: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$1@67e78ce8
 
 scala> lastname.sample.foreach{println}
-Gibson
+Agar
 
 scala> lastname.sample.foreach{println}
-Powell
+Dale
 
 scala> lastname.sample.foreach{println}
-Brissett
+Gardner
 ```
 
 These meet the requirement that the data that is generated is plausible, but using this method the data is not repeatable. If the console is restarted and another surname is generated:
@@ -109,10 +108,10 @@ scala> import hmrc.smartstub._
 import hmrc.smartstub._
 
 scala> val lastname = Gen.surname
-lastname: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$1@7d203a06
+lastname: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$1@67e78ce8
 
 scala> lastname.sample.foreach{println}
-Cooke
+Hall
 ```
 
 The surnames generated will be different.
@@ -127,7 +126,7 @@ scala> import hmrc.smartstub._
 import hmrc.smartstub._
 
 scala> val name = Gen.forename
-name: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@22ca4935
+name: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@601da63b
 
 scala> name.seeded(1L).foreach{println}
 Charlotte
@@ -149,7 +148,7 @@ scala> import hmrc.smartstub._
 import hmrc.smartstub._
 
 scala> val name = Gen.forename
-name: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@5ccf4f62
+name: org.scalacheck.Gen[String] = org.scalacheck.Gen$$anon$3@7b33f535
 
 scala> name.seeded(2L).foreach{println}
 Isaiah
@@ -165,10 +164,10 @@ scala> import hmrc.smartstub._
 import hmrc.smartstub._
 
 scala> val randomNames = (1 to 5).map{x => name.sample.get}
-randomNames: scala.collection.immutable.IndexedSeq[String] = Vector(Noah, Noah, Elijah, Nicholas, Leah)
+randomNames: scala.collection.immutable.IndexedSeq[String] = Vector(Caden, Isaiah, Natalie, Grace, Caleb)
 
 scala> val moreRandomNames = (1 to 5).map{x => name.sample.get}
-moreRandomNames: scala.collection.immutable.IndexedSeq[String] = Vector(Sarah, Benjamin, Chloe, Landon, Gabriel)
+moreRandomNames: scala.collection.immutable.IndexedSeq[String] = Vector(Aria, Grayson, Connor, Sebastian, Lily)
 ```
 
 But if we want to generate the same collection of names each time, we have to use ```seeded``` with the same inputs:

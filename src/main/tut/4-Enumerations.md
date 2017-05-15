@@ -23,7 +23,7 @@ val personGenerator: Gen[Person] = for {
 ## Every pattern is an enumeration - 
 
 ```tut
-val windowTaxRef = Enumerable.patterned("BZZ-99999C")
+val windowTaxRef = pattern"BZZ-99999C"
 windowTaxRef.head
 windowTaxRef.last
 windowTaxRef.size

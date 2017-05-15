@@ -17,6 +17,17 @@ package object smartstub
       with Names
       with Addresses
       with Temporal
+      with Pattern
 
   implicit val longEnum = Enumerable.instances.longEnum
+
+  implicit class PatternContext(val sc: StringContext) extends AnyVal {
+    def pattern(i: Any*): Enumerable[String] = Gen.pattern(
+      sc.parts.head.map {
+        case d if d.isDigit => '0' to d
+        case u if u.isUpper => 'A' to u
+        case l if l.isLower => 'a' to l
+        case x => Seq(x)
+      }).map(_.mkString, s => {s: Seq[Char]})
+  }
 }

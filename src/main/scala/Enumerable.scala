@@ -41,49 +41,18 @@ import org.scalacheck._
       def next(): A = {pos = succ(pos); pos}
     }
   }
+
+  def map[B](f: A => B, invf: B => A): Enumerable[B] = {
+    val base = this
+    new Enumerable[B] {
+      override def get(i: Long) = base.get(i).map(f)
+      def size: Long = base.size
+      def asLong(i: B): Long = base.asLong(invf(i))
+    }
+  }
 }
 
 object Enumerable {
-  def patterned(pattern: String): Enumerable[String] = patterned(
-    pattern.map {
-      case d if d.isDigit => '0' to d
-      case u if u.isUpper => 'A' to u
-      case l if l.isLower => 'a' to l        
-      case x => Seq(x)
-    })
-
-  def patterned(pattern: Seq[Seq[Char]]) = new Enumerable[String] {
-
-    private val chars = pattern.reverse.map(_.zipWithIndex.toMap.mapValues{_.toLong})
-    private val charsR = chars.map{_.map{_.swap}}
-    private val charPermutations = chars.map{_.size.toLong}
-    val size = charPermutations.product
-    private def maxValue = size - 1
-    private val charValues = charPermutations.tails.map{_.product}.toList.tail
-
-    private def zip3[A,B,C](as: Iterable[A], bs: Iterable[B], cs: Iterable[C]): Iterable[(A,B,C)] =
-      as.zip(bs).zip(cs).map {
-        case ((a,b),c) => (a,b,c)
-      }
-
-    def asLong(i: String): Long =
-      zip3(i.reverse, charValues, chars).map {
-        case (c, value, cMap) => cMap(c) * value
-      }.sum
-
-    override def get(i: Long): Option[String] = i match {
-      case low if low < 0 => None
-      case high if high > maxValue => None
-      case _ => charsR.zip(charValues).foldLeft{(i, List.empty[Char])} {
-        case ((r, vals), (posChars,posValue)) =>
-          (r % posValue, posChars(r / posValue) :: vals)
-      } match {
-        case (0,x) => Some(x.mkString)
-        case (r,f) => throw new IllegalStateException(s"Remainder $r with generated $f")
-      }
-    }      
-  }
-
   object instances {
     implicit val longEnum = new Enumerable[Long] {
       override def get(i: Long): Option[Long] = Some(i).filter{_ >= 0}
@@ -92,12 +61,12 @@ object Enumerable {
     }
 
     type Nino = String
-    implicit val ninoEnum: Enumerable[Nino] = Enumerable.patterned("ZZ 99 99 99 Z")
+    implicit val ninoEnum: Enumerable[Nino] = pattern"ZZ 99 99 99 Z"
 
     type Utr = String
-    implicit val utrEnum: Enumerable[Utr] = Enumerable.patterned("99999 99999")
+    implicit val utrEnum: Enumerable[Utr] = pattern"99999 99999"
 
     type EmployerReference = String
-    implicit val empRefEnum: Enumerable[EmployerReference] = Enumerable.patterned("999/Z999")
+    implicit val empRefEnum: Enumerable[EmployerReference] = pattern"999/Z999"
   }
 }
