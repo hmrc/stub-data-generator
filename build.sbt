@@ -20,3 +20,5 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.fu
 initialCommands in console := """import org.scalacheck._; import hmrc.smartstub._"""
 
 enablePlugins(TutPlugin)
+
+licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html"))
