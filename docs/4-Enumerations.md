@@ -7,7 +7,7 @@
 
 ```scala
 scala> val windowTaxRef = pattern"BZZ-99999C"
-windowTaxRef: hmrc.smartstub.Enumerable[String] = hmrc.smartstub.Enumerable$$anon$3@26d77b84
+windowTaxRef: hmrc.smartstub.Enumerable[String] = hmrc.smartstub.Enumerable$$anon$3@48bac2c5
 
 scala> windowTaxRef.head
 res0: String = AAA-00000A
@@ -48,7 +48,7 @@ scala> val windowTaxGenerator: Gen[WindowTaxAccount] = for {
      |   person <- personGenerator
      |   ref <- Gen.option(windowTaxRef.gen)
      | } yield WindowTaxAccount(person, ref)
-windowTaxGenerator: org.scalacheck.Gen[WindowTaxAccount] = org.scalacheck.Gen$$anon$3@2dd0e084
+windowTaxGenerator: org.scalacheck.Gen[WindowTaxAccount] = org.scalacheck.Gen$$anon$3@5af00453
 ```
 
 ## Using enumerations as the input for the generation - 
@@ -58,7 +58,7 @@ scala> import hmrc.smartstub.Enumerable.instances.ninoEnum
 import hmrc.smartstub.Enumerable.instances.ninoEnum
 
 scala> implicitly[Enumerable[String]]
-res5: hmrc.smartstub.Enumerable[String] = hmrc.smartstub.Enumerable$$anon$3@41a249b7
+res5: hmrc.smartstub.Enumerable[String] = hmrc.smartstub.Enumerable$$anon$3@4c4de38d
 
 scala> val ninoNineThousandAndNine = Enumerable[String].apply(9009L)
 ninoNineThousandAndNine: String = NI 31 00 00 A
