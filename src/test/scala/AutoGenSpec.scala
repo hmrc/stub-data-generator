@@ -15,12 +15,15 @@ class AutoGenSpec extends FlatSpec with Checkers with Matchers {
     import shapeless._
     val x = 'forename
     val y = 'surname
-    "val gen = AutoGen[FieldType[x.type,String] :: HNil]" should compile
+    "val gen = AutoGen[FieldType[x.type,String] :: FieldType[y.type,String] :: HNil]" should compile
   }
 
-
   it should "derive a Gen[A] for a case class" in {
-    case class Blah(forename: String)
+    case class Blah(forename: String, surname: String)
     "val gen: Gen[Blah] = AutoGen[Blah]" should compile
+  }
+
+  it should "derive a Gen[A] for an n-tuple" in {
+    "val gen = AutoGen[(String,String,String)]" should compile
   }
 }
