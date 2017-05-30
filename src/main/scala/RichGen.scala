@@ -17,14 +17,14 @@ case class RichGen[A](g: Gen[A]) extends AnyVal {
 
   def optFrequency(i: Int): Gen[Option[A]] = 
     Gen.frequency(
-      i -> g.map(x => Some(x)),
-      {100 - i} → const[Option[A]](None)
+      i -> g.map(Some(_)),
+      {100 - i} -> const[Option[A]](None)
     )
 
-  def hardlyEver: Gen[Option[A]] = optFrequency(1)
-  def rarely: Gen[Option[A]] = optFrequency(25)
-  def sometimes: Gen[Option[A]] = optFrequency(50)
-  def usually: Gen[Option[A]] = optFrequency(75)
+  def hardlyEver:   Gen[Option[A]] = optFrequency(1)
+  def rarely:       Gen[Option[A]] = optFrequency(25)
+  def sometimes:    Gen[Option[A]] = optFrequency(50)
+  def usually:      Gen[Option[A]] = optFrequency(75)
   def almostAlways: Gen[Option[A]] = optFrequency(99)
 
 }
