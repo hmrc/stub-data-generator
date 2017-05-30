@@ -4,8 +4,6 @@ import shapeless._
 import shapeless.labelled._
 import org.scalacheck._
 import hmrc.smartstub._
-import shapeless.ops.coproduct
-import shapeless.ops.nat.ToInt
 
 trait GenProvider[A] {
   def gen: Gen[A] = genN("")

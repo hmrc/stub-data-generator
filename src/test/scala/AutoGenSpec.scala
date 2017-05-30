@@ -25,6 +25,10 @@ class AutoGenSpec extends FlatSpec with Checkers with Matchers {
     "val gen: Gen[Blah] = AutoGen[Blah]" should compile
   }
 
+  it should "derive a Gen[A] for an n-tuple" in {
+    "val gen = AutoGen[(String,String,String)]" should compile
+  }
+
   it should "derive a Gen[A] for Options, Lists and Seq's" in {
     case class Blah(forenames: List[String], surnames: Seq[String], count: Option[Int])
     "val gen: Gen[Blah] = AutoGen[Blah]" should compile
