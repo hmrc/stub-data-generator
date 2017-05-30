@@ -32,6 +32,13 @@ trait Addresses extends Any {
   } yield {
     pre ++ post
   }
+
+  def ukPhoneNumber: Gen[String] = for {
+    prefix <- Gen.listOfN(4,Gen.numChar).map{_.mkString} 
+    suffix <- Gen.listOfN(6,Gen.numChar).map{_.mkString}   
+  } yield {
+    s"0$prefix $suffix"
+  }
 }
 
 object Addresses extends Loader {
