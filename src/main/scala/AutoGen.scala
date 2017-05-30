@@ -44,6 +44,22 @@ object AutoGen {
   )
   implicit val providerBoolean = instanceF(Gen.oneOf(true,false))
 
+  // Collection types
+  implicit def providerOpt[A](implicit inner: GenProvider[A]): GenProvider[Option[A]]  =
+    instance { x => 
+      Gen.option(inner.genN(x))
+    }
+
+  implicit def providerList[A](implicit inner: GenProvider[A]): GenProvider[List[A]]  =
+    instance { x => 
+      Gen.listOf(inner.genN(x))
+    }
+
+  implicit def providerSeq[A](implicit inner: GenProvider[A]): GenProvider[Seq[A]]  =
+    instance { x => 
+      Gen.listOf(inner.genN(x))
+    }
+
   // HLists
   implicit val providerHNil: GenProvider[HNil] = instanceF(Gen.const(HNil))
 
