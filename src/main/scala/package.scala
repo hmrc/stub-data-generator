@@ -18,6 +18,10 @@ package object smartstub
       with Addresses
       with Temporal
       with Pattern
+  {
+    def boolean: Gen[Boolean] = Gen.oneOf(true, false)
+  }
+
 
   implicit val longEnum = Enumerable.instances.longEnum
 
