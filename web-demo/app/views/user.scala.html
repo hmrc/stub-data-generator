@@ -1,0 +1,72 @@
+@(taxpayer: controllers.TaxPayer, nino: String)
+
+@main(taxpayer.forename.take(1) ++ " " ++ taxpayer.surname) {
+
+<table>
+  <tr>
+    <th>
+      NINO
+    </th>
+    <td>
+      @nino
+    </td>
+  </tr>
+
+  <tr>
+    <th>
+      Forename
+    </th>
+    <td>
+      @taxpayer.forename
+    </td>
+  </tr>
+  <tr>
+    <th>
+      Middle Name
+    </th>
+    <td>
+      @taxpayer.middlename      
+    </td>
+  </tr>
+  <tr>
+    <th>
+      Surname
+    </th>
+    <td>
+      @taxpayer.surname
+    </td>
+  </tr>
+  <tr>
+    <th>
+      Address
+    </th>
+    <td>
+      @taxpayer.address
+    </td>
+  </tr>
+  <tr>
+    <th>
+      Job
+    </th>
+    <td>
+      @taxpayer.job
+    </td>
+  </tr>
+
+  <tr>
+    <th>
+      UTR
+    </th>
+    <td>
+      @taxpayer.utr
+    </td>
+  </tr>
+</table>
+
+<h2>Computers</h2>
+<ul>
+  @for(comp <- taxpayer.computers) {
+    <li>@comp</li>
+  }
+</ul>
+}
