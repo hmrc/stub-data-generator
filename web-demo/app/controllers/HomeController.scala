@@ -13,8 +13,9 @@ case object LinuxMachine extends Computer
 case object WindowsMachine extends Computer
 
 case class TaxPayer(
+  gender: Gender,
   forename: String,
-  middlename: Option[String],  
+  middlename: Option[String],
   surname: String,
   job: Option[String],
   address: String,
@@ -47,7 +48,7 @@ class HomeController @Inject() extends Controller {
       computerNum <- Gen.choose(0,5)
       computers <- Gen.listOfN(computerNum, Gen.oneOf(MacMachine, LinuxMachine, WindowsMachine))
     } yield {
-      TaxPayer(forename, middlename, surname, job, address, utr, computers)
+      TaxPayer(gender, forename, middlename, surname, job, address, utr, computers)
     }
   }.asMutable[String]
 
@@ -62,5 +63,5 @@ class HomeController @Inject() extends Controller {
   def user(nino: String) = Action { implicit request =>
     Ok(views.html.user(store(nino), nino))
   }
-  
+
 }
