@@ -2,7 +2,6 @@
 
     @main(s"Example Stub Generator Service - page $page") {
 
-
         <header class="hero">
             <section class="hero__content">
                 <h1 class="hero__heading-large">Example Stub Generator Service</h1>
@@ -11,7 +10,6 @@
                 </h2>
             </section>
         </header>
-
 
         <div id="content">
             <nav class="page-navigation--previous-next" role="navigation"
@@ -51,7 +49,6 @@
         } of @{
             f"$totalPages%,d"
         }
-
             <article class="content__body">
                 <table class="table--spaced-top table--light-header">
                     <thead>
@@ -73,7 +70,7 @@
                     @for((nino, record) <- records) {
                         <tr>
                             <td>
-                                <a href="@routes.HomeController.user(nino)">
+                                <a href="@routes.HomeController.user(nino, page)">
                                     @record.forename.take(1)
                                     @record.surname
                                 </a>

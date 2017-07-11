@@ -60,8 +60,8 @@ class HomeController @Inject() extends Controller {
     Ok(views.html.index(page, numPages, resultsPage))
   }
 
-  def user(nino: String) = Action { implicit request =>
-    Ok(views.html.user(store(nino), nino))
+  def user(nino: String, page: Long) = Action { implicit request =>
+    Ok(views.html.user(store(nino), nino, page))
   }
 
 }
