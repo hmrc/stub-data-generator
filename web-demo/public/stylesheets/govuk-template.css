@@ -391,15 +391,13 @@ button:focus,
     background-position: 0 0; }
 #global-header #logo img {
     position: relative;
-    top: -2px;
     width: 35px;
     height: 31px;
     padding-right: 6px;
     float: left;
     display: inline;
     line-height: inherit;
-    border: none;
-    visibility: hidden; }
+    border: none;  }
 #global-header #logo:hover, #global-header #logo:focus {
     text-decoration: none;
     border-bottom-color: white; }
@@ -645,7 +643,17 @@ button:focus,
     height: 17px;
     overflow: hidden;
     text-indent: -999em;
-    background: url(../images/open-government-licence.png?0.17.3) 0 0 no-repeat; }
+    background: url(../images/open-government-licence_2x.png) 0 0 no-repeat; }
+#footer .footer-meta .footer-meta-inner .open-government-licence h2 {
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 41px;
+    height: 100%;}
+#footer .footer-meta .footer-meta-inner .open-government-licence h2 img {
+    float: left;
+    width: 43px;
+    height: 17px;  }
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     #footer .footer-meta .footer-meta-inner .open-government-licence .logo a {
         background-image: url(images/open-government-licence_2x.png?0.17.3);
@@ -654,10 +662,20 @@ button:focus,
     font-family: "nta", Arial, sans-serif;
     font-size: 16px;
     line-height: 1.25;
-    font-weight: 400;
+    font-weight: 300;
     text-transform: none;
     margin: 0;
-    padding-top: 0.1em; }
+    padding-top: 0.1em;
+    height: 20px;}
+#footer .footer-meta .footer-meta-inner .open-government-licence p a{
+    font-family: "nta", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 300;
+    text-transform: none;
+    margin: 0;
+    padding-top: 0.1em;
+    height: 20px;}
 @media (max-width: 640px) {
     #footer .footer-meta .footer-meta-inner .open-government-licence p {
         font-size: 14px;

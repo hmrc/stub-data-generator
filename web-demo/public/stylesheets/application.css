@@ -4834,9 +4834,9 @@ Styleguide Lists.Action
 .action-list {
     list-style: none;
     margin-top: 50px;
-    padding: 20px;
+    padding-bottom: 20px;
     clear: both;
-    max-width: 50%;
+    max-width: 80%;
 }
 
 .action-list li {
@@ -6063,7 +6063,7 @@ Styleguide Links.Next
 
 .page-nav__link--previous:before {
     font-size: 19px;
-    background: transparent url(../images/icons/arrow-sprite.png) no-repeat -1.0526315789em -0.5789473684em;
+    background: transparent url(../images/arrow-sprite.png) no-repeat -1.0526315789em -0.5789473684em;
     margin: -0.2105263158em 0 0 -1.6842105263em;
     float: left;
     width: 1.5789473684em;
@@ -6078,7 +6078,7 @@ Styleguide Links.Next
 }
 
 .page-nav__link--next:before {
-    background: transparent url(../images/icons/arrow-sprite.png) no-repeat -5.3684210526em -0.5789473684em;
+    background: transparent url(../images/arrow-sprite.png) no-repeat -5.3684210526em -0.5789473684em;
     margin: -0.2105263158em -1.6842105263em 0 0;
     float: right;
     width: 1.5789473684em;
