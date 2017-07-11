@@ -13,7 +13,16 @@
         </section>
     </header>
 
-    <div class="grid-layout [modifier class]">
+    <div id="content">
+        <div class="alpha-banner">
+            <p>
+                <strong class="phase-tag">ALPHA</strong>
+                <span>This is a trial service. Help us improve it - send your
+                    <a href="">feedback</a>.</span>
+            </p>
+        </div>
+    </div>
+    <div class="grid-layout">
         <div class="grid-layout__column--1-3">
             @if(taxpayer.gender == Male) {
                 <img src="@routes.Assets.versioned("images/male.png")" alt="">

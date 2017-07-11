@@ -53,8 +53,8 @@ class HomeController @Inject() extends Controller {
   }.asMutable[String]
 
   def index(page: Long) = Action { implicit request =>
-    val start = (page-1) * 20
-    val end = start + 20
+    val start = (page-1) * 12
+    val end = start + 12
     val resultsPage = {start to end}.map{x => (nino(x), store(nino(x)))}
     val numPages = nino.size / 20
     Ok(views.html.index(page, numPages, resultsPage))

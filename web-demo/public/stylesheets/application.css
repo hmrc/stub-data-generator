@@ -22390,3 +22390,7 @@ abbr[title], acronym[title] {
 input.uppercase {
     text-transform: uppercase;
 }
+
+.page-info {
+    padding-top: 10px;
+}
