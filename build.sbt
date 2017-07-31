@@ -1,10 +1,10 @@
 name := "stub-data-generator"
 
-organization := "hmrc"
+organization := "uk.gov.hmrc"
 
 scalaVersion := "2.12.2"
 
-version := "0.1.0"
+version := "0.3.1"
 
 crossScalaVersions := Seq("2.11.11", "2.12.2")
 
