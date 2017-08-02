@@ -1,9 +1,9 @@
-package hmrc.smartstub
+package uk.gov.hmrc.smartstub
 
 import shapeless._
 import shapeless.labelled._
 import org.scalacheck._
-import hmrc.smartstub._
+import uk.gov.hmrc.smartstub._
 
 trait GenProvider[A] {
   def gen: Gen[A] = genN("")
@@ -34,9 +34,11 @@ object AutoGen {
 
   implicit val providerString = instance(
     _ match {
-      case "forename" => Gen.forename
-      case "surname" => Gen.surname
-      case "gender" => Gen.oneOf("male", "female")
+      case "forename" | "firstname" => Gen.forename
+      case "surname" | "lastname" | "familyname" => Gen.surname
+      case x if x.toLowerCase.contains("address") =>
+        Gen.ukAddress.map{_.mkString(", ")}
+      case "gender" | "sex" => Gen.oneOf("male", "female")
       case "nino" => Enumerable.instances.ninoEnum.gen
       case "utr" => Enumerable.instances.utrEnum.gen        
       case _ => Gen.alphaStr

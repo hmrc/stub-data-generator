@@ -4,7 +4,7 @@ import javax.inject._
 import play.api._
 import play.api.mvc._
 import org.scalacheck._
-import hmrc.smartstub._
+import uk.gov.hmrc.smartstub._
 import AutoGen._
 
 sealed trait Computer

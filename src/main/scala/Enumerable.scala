@@ -1,4 +1,4 @@
-package hmrc.smartstub
+package uk.gov.hmrc.smartstub
 
 import scala.language.implicitConversions
 
@@ -65,6 +65,9 @@ object Enumerable {
 
     type Utr = String
     implicit val utrEnum: Enumerable[Utr] = pattern"99999 99999"
+
+    implicit val sortCodeEnum: Enumerable[String] = pattern"99-99-99"
+    implicit val accountNumberEnum: Enumerable[String] = pattern"99999999"
 
     type EmployerReference = String
     implicit val empRefEnum: Enumerable[EmployerReference] = pattern"999/Z999"

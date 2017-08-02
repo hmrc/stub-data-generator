@@ -1,4 +1,4 @@
-package hmrc
+package uk.gov.hmrc
 
 import org.scalacheck._
 import scala.language.implicitConversions
