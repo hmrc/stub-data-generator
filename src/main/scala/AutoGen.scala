@@ -3,7 +3,6 @@ package uk.gov.hmrc.smartstub
 import shapeless._
 import shapeless.labelled._
 import org.scalacheck._
-import uk.gov.hmrc.smartstub._
 
 trait GenProvider[A] {
   def gen: Gen[A] = genN("")
@@ -27,13 +26,13 @@ object AutoGen {
   }
 
   // 'basic' types
-  implicit val providerInt = instance(_ match {
+  implicit val providerInt = instance(_.toLowerCase match {
     case "age" => Gen.choose(1,80)
     case _ => Gen.choose(1,1000)
   })
 
   implicit val providerString = instance(
-    _ match {
+    _.toLowerCase match {
       case "forename" | "firstname" => Gen.forename
       case "surname" | "lastname" | "familyname" => Gen.surname
       case x if x.toLowerCase.contains("address") =>
