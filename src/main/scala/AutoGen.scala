@@ -1,8 +1,8 @@
 package uk.gov.hmrc.smartstub
 
+import org.scalacheck._
 import shapeless._
 import shapeless.labelled._
-import org.scalacheck._
 import shapeless.ops.nat.ToInt
 
 object AutoGen extends LowPriorityGenProviderInstances {
@@ -47,6 +47,7 @@ object AutoGen extends LowPriorityGenProviderInstances {
       case "gender" | "sex" => Gen.oneOf("male", "female")
       case "nino" => Enumerable.instances.ninoEnum.gen
       case "utr" => Enumerable.instances.utrEnum.gen
+      case "company" => Gen.company
       case _ => Gen.alphaStr
     }
   })

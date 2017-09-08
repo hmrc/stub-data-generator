@@ -15,7 +15,8 @@ libraryDependencies ++= Seq(
   "com.github.mpilquist" %% "simulacrum" % "0.11.0",
   "com.chuusai"          %% "shapeless"  % "2.3.2",
   "org.typelevel"        %% "cats"       % "0.9.0",
-  "org.scalatest"        %% "scalatest"  % "3.0.3"   % "test"
+  "org.scalatest"        %% "scalatest"  % "3.0.3"   % "test",
+  "io.github.amrhassan" %% "scalacheck-cats" % "0.3.2"
 )
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)

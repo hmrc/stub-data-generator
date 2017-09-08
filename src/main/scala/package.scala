@@ -3,6 +3,8 @@ package uk.gov.hmrc
 import org.scalacheck._
 import scala.language.implicitConversions
 import cats.functor.Invariant
+import cats.Monad
+import scala.language.higherKinds
 
 package object smartstub
     extends Enumerable.ToEnumerableOps
@@ -20,6 +22,7 @@ package object smartstub
       with Addresses
       with Temporal
       with Pattern
+      with Companies
   {
     def boolean: Gen[Boolean] = Gen.oneOf(true, false)
   }
@@ -41,4 +44,18 @@ package object smartstub
       fa.imap(f)(finv)
   }
 
+  def repeatM[M[_],A](input: M[A], f: A => M[A], n: Int)(implicit monad: Monad[M]): M[A] = {
+
+    /**
+      * inner method is used to avoid possible overhead of implicit
+      * resolution on recursive call
+      */
+    @annotation.tailrec
+    def inner(input: M[A], n: Int): M[A] =
+      n match {
+        case 0 => input
+        case n => inner(monad.flatMap(input)(f), n - 1)
+      }
+    inner(input, n)
+  }
 }
