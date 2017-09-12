@@ -1,8 +1,10 @@
 package uk.gov.hmrc.smartstub
 
-import org.scalacheck._
+import java.time.LocalDate
+
 import shapeless._
 import shapeless.labelled._
+import org.scalacheck._
 import shapeless.ops.nat.ToInt
 
 object AutoGen extends LowPriorityGenProviderInstances {
@@ -17,6 +19,8 @@ object AutoGen extends LowPriorityGenProviderInstances {
   def instance[A](f: Gen[A]): GenProvider[A] = new GenProvider[A] {
     override val gen: Gen[A] = f
   }
+
+  implicit def providerUnnamed[A](implicit g: GenProvider[A]): String ⇒ GenProvider[A] = _ ⇒ g
 
   // Named types
   implicit def providerSeqNamed[A](s: String)(implicit inner: String ⇒ GenProvider[A]): GenProvider[Seq[A]] =
@@ -33,8 +37,8 @@ object AutoGen extends LowPriorityGenProviderInstances {
 
   implicit def providerIntNamed(s: String): GenProvider[Int] = instance ({
     s.toLowerCase match {
-      case "age" => Gen.choose(1, 80)
-      case _ => Gen.choose(1, 1000)
+      case "age" ⇒ Gen.age
+      case _     ⇒ Gen.choose(1, 1000)
     }
   })
 
@@ -52,11 +56,19 @@ object AutoGen extends LowPriorityGenProviderInstances {
     }
   })
 
+  implicit def providerLocalDate(s: String): GenProvider[LocalDate] = instance({
+    s.toLowerCase match {
+      case "dateofbirth" | "dob" | "birthdate" | "bornon" | "birthday" ⇒
+        // the date below is hard coded to keep the date's generated consistent with time -
+        // this implies there will never be a date of birth generated after the hard coded
+        // date
+        Gen.age.map(a ⇒ LocalDate.of(2017,9,1).minusYears(a.toLong))
+      case _                                                           ⇒ Gen.date
+    }
+  })
+
   implicit def providerBooleanNamed(s: String): GenProvider[Boolean] =
     instance(Gen.oneOf(true,false))
-
-   implicit def providerUnnamed[A](implicit g: String ⇒ GenProvider[A]): GenProvider[A] = g("")
-
 
   // generic instance
 
@@ -111,6 +123,8 @@ object AutoGen extends LowPriorityGenProviderInstances {
 trait LowPriorityGenProviderInstances {
 
   import AutoGen.{GenProvider, instance}
+
+  implicit def providerUnnamed2[A](implicit g: String ⇒ GenProvider[A]): GenProvider[A] = g("")
 
   implicit def providerHCons2[K <: Symbol, H, T <: HList]
   (implicit
