@@ -11,17 +11,11 @@ The library is built for use within Scala Play 2.5 application controllers, but 
 **1**. Add the following to `build.sbt`:
 
 ```scala
-addSbtPlugin("hmrc" %% "stub-data-generator" % "0.1.0")
+addSbtPlugin("uk.gov.hmrc" %% "stub-data-generator" % "0.4.0")
 ```
 
 ## Documentation
 1. [Using ScalaCheck to generate data](docs/1-ScalaCheckPrimer.md)
-2. [Procedurally generating data](docs/2-ProceduralGeneration.md)
-3. [Composing data](docs/3-ComposingData.md)
-4. [Enumerations and Patterns](docs/4-Enumerations.md)
-5. [Mutable Data](docs/5-MutatingData.md)
-6. [Simple Usage](docs/RichGen.md)
-1. [Generating simple data](docs/1-ScalaCheckPrimer.md)
 2. [Procedurally generating data](docs/2-ProceduralGeneration.md)
 3. [Composing data](docs/3-ComposingData.md)
 4. [Enumerations and Patterns](docs/4-Enumerations.md)
