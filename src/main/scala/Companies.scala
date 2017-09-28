@@ -8,12 +8,18 @@ trait Companies extends Any {
 
 object Companies extends Loader {
 
-  val markovChain = new MarkovChain[Char](
-    data = scala.io.Source.fromURL(
-      getClass.getResource("company-names.txt")
-    ).mkString.toList,
-    windowSize = 3,
-    terminus = " ".toList)
+  val markovChain = {
+    val source = scala.io.Source.fromURL(getClass.getResource("company-names.txt"))
+
+    try {
+      new MarkovChain[Char](
+        data = source.mkString.toList,
+        windowSize = 3,
+        terminus = " ".toList)
+    } finally {
+      source.close()
+    }
+  }
 
   def company: Gen[String] = for {
     size <- Gen.choose(5, 20)
