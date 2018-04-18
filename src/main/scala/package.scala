@@ -2,7 +2,7 @@ package uk.gov.hmrc
 
 import org.scalacheck._
 import scala.language.implicitConversions
-import cats.functor.Invariant
+import cats.Invariant
 import cats.Monad
 import scala.language.higherKinds
 
