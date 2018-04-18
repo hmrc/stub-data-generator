@@ -1,5 +1,7 @@
 # Smart Stub Generator (a.k.a. The Font of Infinite Nonsense) 
 
+![Maven Central](https://maven-badges.herokuapp.com/maven-central/uk.gov.hmrc/stub-data-generator_2.12/badge.svg?style=plastic)
+
 **smart-stub-generator** is a tool to create data for testing.  It is intended for use within HMRC to help the 'stub' services — microservices that mimic the interfaces of production backend systems. 
 
 The data the generator produces is intended to be plausible but fake eliminating the need to either manually craft test records or take real records and anonymize them. For example when generating names, the names will look real rather than random strings.
@@ -11,7 +13,7 @@ The library is built for use within Scala Play 2.5 application controllers, but 
 **1**. Add the following to `build.sbt`:
 
 ```scala
-addSbtPlugin("uk.gov.hmrc" %% "stub-data-generator" % "0.4.0")
+addSbtPlugin("uk.gov.hmrc" %% "stub-data-generator" % "X.X.X")
 ```
 
 ## Documentation
