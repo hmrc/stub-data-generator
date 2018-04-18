@@ -4,7 +4,7 @@ organization := "uk.gov.hmrc"
 
 scalaVersion := "2.12.2"
 
-version := "0.4.0"
+version := "0.5.0"
 
 crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2")
 
@@ -14,7 +14,7 @@ libraryDependencies ++= Seq(
   "org.scalacheck"       %% "scalacheck" % "1.13.5",
   "com.github.mpilquist" %% "simulacrum" % "0.11.0",
   "com.chuusai"          %% "shapeless"  % "2.3.2",
-  "org.typelevel"        %% "cats"       % "0.9.0",
+  "org.typelevel"        %% "cats-core"  % "1.1.0",
   "org.scalatest"        %% "scalatest"  % "3.0.3"   % "test",
   "io.github.amrhassan" %% "scalacheck-cats" % "0.3.2"
 )
