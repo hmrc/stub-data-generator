@@ -30,4 +30,6 @@ case class PersistentGen[K, V] (gen: Gen[V], state: MMap[K,Option[V]])(implicit 
   override def toString = gen.toString
 
   override def size = {en.size - state.values.count(_.isEmpty)}.toInt
+
+  override def clear = state.clear
 } 
