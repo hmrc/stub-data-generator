@@ -4,8 +4,6 @@ organization := "uk.gov.hmrc"
 
 scalaVersion := "2.12.2"
 
-version := "0.5.0"
-
 crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2")
 
 homepage := Some(url("https://github.com/hmrclt/stub-data-generator"))
@@ -24,6 +22,13 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.fu
 initialCommands in console := """import org.scalacheck._; import uk.gov.hmrc.smartstub._"""
 
 enablePlugins(TutPlugin)
+
+enablePlugins(GitVersioning)
+
+git.gitTagToVersionNumber := { tag: String =>
+  if(tag matches "[0-9]+\\..*") Some(tag)
+  else None
+}
 
 licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html"))
 
