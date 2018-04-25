@@ -39,7 +39,7 @@ scmInfo := Some(
 developers := List(
   Developer(
     id            = "hmrclt",
-    name	  = "Luke Tebbs",
+    name	        = "Luke Tebbs",
     email         = "luke.tebbs@digital.hmrc.gov.uk",
     url           = url("http://www.luketebbs.com/")
   )
