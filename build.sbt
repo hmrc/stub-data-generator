@@ -42,6 +42,12 @@ developers := List(
     name	        = "Luke Tebbs",
     email         = "luke.tebbs@digital.hmrc.gov.uk",
     url           = url("http://www.luketebbs.com/")
+  ),
+  Developer(
+    id            = "AndyHWChung",
+    name	        = "Andy Chung",
+    email         = "andrew.chung@digital.hmrc.gov.uk",
+    url           = url("https://github.com/AndyHWChung")
   )
 )
 
