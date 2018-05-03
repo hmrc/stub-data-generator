@@ -23,26 +23,26 @@ object AutoGen extends LowPriorityGenProviderInstances {
   implicit def providerUnnamed[A](implicit g: GenProvider[A]): String ⇒ GenProvider[A] = _ ⇒ g
 
   // Named types
-  implicit def providerSeqNamed[A](s: String)(implicit inner: String ⇒ GenProvider[A]): GenProvider[Seq[A]] =
-    instance(Gen.listOf(inner(s).gen))
+  implicit def providerSeqNamed[A](s: String)(implicit inner: Lazy[String ⇒ GenProvider[A]]): GenProvider[Seq[A]] =
+    instance(Gen.listOf(inner.value(s).gen))
 
-  implicit def providerSetNamed[A](s: String)(implicit inner: String ⇒ GenProvider[A]): GenProvider[Set[A]] =
-    instance(Gen.listOf(inner(s).gen).map(_.toSet))
+  implicit def providerSetNamed[A](s: String)(implicit inner: Lazy[String ⇒ GenProvider[A]]): GenProvider[Set[A]] =
+    instance(Gen.listOf(inner.value(s).gen).map(_.toSet))
 
-  implicit def providerVectorNamed[A](s: String)(implicit inner: String ⇒ GenProvider[A]): GenProvider[Vector[A]] =
-    instance(Gen.listOf(inner(s).gen).map(l ⇒l.toVector))
+  implicit def providerVectorNamed[A](s: String)(implicit inner: Lazy[String ⇒ GenProvider[A]]): GenProvider[Vector[A]] =
+    instance(Gen.listOf(inner.value(s).gen).map(l ⇒l.toVector))
 
-  implicit def providerOptionNamed[A](s: String)(implicit inner: String ⇒ GenProvider[A]): GenProvider[Option[A]] =
-    instance(Gen.option(inner(s).gen))
+  implicit def providerOptionNamed[A](s: String)(implicit inner: Lazy[String ⇒ GenProvider[A]]): GenProvider[Option[A]] =
+    instance(Gen.option(inner.value(s).gen))
 
-  implicit def providerIntNamed(s: String): GenProvider[Int] = instance ({
+  implicit def providerIntNamed: String ⇒ GenProvider[Int] = s ⇒ instance ({
     s.toLowerCase match {
       case "age" ⇒ Gen.age
       case _     ⇒ Gen.choose(1, 1000)
     }
   })
 
-  implicit def providerStringNamed(s: String): GenProvider[String] = instance ({
+  implicit def providerStringNamed: String ⇒ GenProvider[String] = s ⇒ instance ({
     s.toLowerCase match {
       case "forename" | "firstname" => Gen.forename
       case "surname" | "lastname" | "familyname" => Gen.surname
@@ -56,7 +56,7 @@ object AutoGen extends LowPriorityGenProviderInstances {
     }
   })
 
-  implicit def providerLocalDate(s: String): GenProvider[LocalDate] = instance({
+  implicit def providerLocalDate: String ⇒ GenProvider[LocalDate] = s ⇒ instance({
     s.toLowerCase match {
       case "dateofbirth" | "dob" | "birthdate" | "bornon" | "birthday" ⇒
         // the date below is hard coded to keep the date's generated consistent with time -
@@ -67,8 +67,8 @@ object AutoGen extends LowPriorityGenProviderInstances {
     }
   })
 
-  implicit def providerBooleanNamed(s: String): GenProvider[Boolean] =
-    instance(Gen.oneOf(true,false))
+  implicit def providerBooleanNamed: String ⇒ GenProvider[Boolean] =
+    _ ⇒ instance(Gen.oneOf(true,false))
 
   // generic instance
 
