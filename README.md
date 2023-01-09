@@ -8,6 +8,10 @@ The data the generator produces is intended to be plausible but fake eliminating
 
 The library is built for use within Scala Play 2.5 application controllers, but can be used as easily on the REPL or backed by a RDBMS. 
 
+### License
+
+This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+
 ## SBT Project Setup
 
 **1**. Add the following to `build.sbt`:
