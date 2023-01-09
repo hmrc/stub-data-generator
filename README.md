@@ -27,3 +27,5 @@ addSbtPlugin("uk.gov.hmrc" %% "stub-data-generator" % "X.X.X")
 4. [Enumerations and Patterns](docs/4-Enumerations.md)
 5. [Mutable Data](docs/5-MutatingData.md)
 6. [Simple Usage](docs/RichGen.md)
+
+
