@@ -16,17 +16,22 @@
 
 package uk.gov.hmrc.smartstub
 
-import org.scalatest.prop.Checkers
-import org.scalacheck.Arbitrary._
-import org.scalacheck.Prop._
-import org.scalatest.FlatSpec
+import org.scalacheck.Gen
+import org.scalacheck.Gen.choose
 
-class EnumerableSpec extends FlatSpec with Checkers {
+import java.time.LocalDate
 
-  "A Nino" should "convert back and from a Long unchanged" in {
-    import Enumerable.instances.ninoEnum
-    check{(a: Long) =>
-      val t = {a % ninoEnum.size}.abs
-      t == ninoEnum.apply(t).asLong}
-  }
+trait Temporal extends Any {
+  def date(start: LocalDate, end: LocalDate): Gen[LocalDate] =
+    choose(start.toEpochDay, end.toEpochDay).map(LocalDate.ofEpochDay)
+
+  def date: Gen[LocalDate] = date(1970, 2000)
+
+  def date(
+            start: Int,
+            end: Int
+          ): Gen[LocalDate] = date(
+    LocalDate.of(start, 1, 1),
+    LocalDate.of(end, 12, 31)
+  )
 }
