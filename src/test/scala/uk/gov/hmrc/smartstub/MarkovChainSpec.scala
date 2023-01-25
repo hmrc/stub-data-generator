@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.smartstub
 
-import org.scalatest.prop.Checkers
-import org.scalatest.FlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
 
-class MarkovChainSpec extends FlatSpec with Checkers {
+class MarkovChainSpec extends AnyFlatSpec {
 
   "A MarkovChain[String]" should "generate a string" in {
     new MarkovChain(Seq("one", "two", "three", "two"), 2).sized(3)

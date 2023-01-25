@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.smartstub
 
-import org.scalatest.prop.Checkers
-import org.scalacheck.Arbitrary._
-import org.scalacheck.Prop._
-import org.scalatest.FlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatestplus.scalacheck.Checkers
 
-class EnumerableSpec extends FlatSpec with Checkers {
+class EnumerableSpec extends AnyFlatSpec with Checkers {
 
   "A Nino" should "convert back and from a Long unchanged" in {
     import Enumerable.instances.ninoEnum

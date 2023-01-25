@@ -17,6 +17,7 @@
 package uk.gov.hmrc.smartstub
 
 import org.scalacheck.Gen
+import scala.collection.mutable.{ Map => MMap }
 
 case class PersistentGen[K, V](
                                 gen: Gen[V],
