@@ -5,7 +5,7 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.fu
 
 val compileDependencies = PlayCrossCompilation.dependencies(
   shared = Seq(
-    "com.github.mpilquist" %% "simulacrum" % "0.12.0",
+    "org.typelevel" %% "simulacrum" % "1.0.1",
     "com.chuusai"          %% "shapeless"  % "2.3.3",
     "org.typelevel"        %% "cats-core"  % "2.9.0",
     "org.scalacheck" %% "scalacheck" % "1.17.0",
