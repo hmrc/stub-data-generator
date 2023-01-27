@@ -1,7 +1,7 @@
 val scala2_12 = "2.12.9"
 val scala2_13 = "2.13.10"
 
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
+//addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
 
 val compileDependencies = PlayCrossCompilation.dependencies(
   shared = Seq(
@@ -32,8 +32,17 @@ lazy val stubDataGenerator = Project("stub-data-generator", file("."))
     isPublicArtefact := true,
     scalaVersion := scala2_12,
     crossScalaVersions := Seq(scala2_12, scala2_13),
-    libraryDependencies ++= compileDependencies ++ testDependencies,
-    dependencyOverrides +=  "org.typelevel"        %% "cats-core"  % "2.9.0"
-    //    libraryDependencies
+    libraryDependencies ++= compileDependencies ++ testDependencies ++ {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 =>
+          List(compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full))
+        case _                       => Nil
+      }},
+    dependencyOverrides +=  "org.typelevel"        %% "cats-core"  % "2.9.0",
+    Compile / scalacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 => Nil
+        case _                       => List("-Ymacro-annotations")
+      }}
   )
   .settings(PlayCrossCompilation.playCrossCompilationSettings)
