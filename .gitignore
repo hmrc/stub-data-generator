@@ -21,3 +21,5 @@ project/build/properties
 .ensime*
 **~
 **/*.sc
+
+.bsp/
