@@ -1,63 +1,38 @@
-name := "stub-data-generator"
+val scala2_12 = "2.12.15"
 
-organization := "uk.gov.hmrc"
-
-scalaVersion := "2.12.2"
-
-crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2")
-
-homepage := Some(url("https://github.com/hmrclt/stub-data-generator"))
-
-libraryDependencies ++= Seq(
-  "org.scalacheck"       %% "scalacheck" % "1.13.5",
-  "com.github.mpilquist" %% "simulacrum" % "0.12.0",
-  "com.chuusai"          %% "shapeless"  % "2.3.3",
-  "org.typelevel"        %% "cats-core"  % "1.1.0",
-  "org.scalatest"        %% "scalatest"  % "3.0.5"   % "test",
-  "io.github.amrhassan" %% "scalacheck-cats" % "0.4.0"
-)
-
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
-
-initialCommands in console := """import org.scalacheck._; import uk.gov.hmrc.smartstub._"""
-
-enablePlugins(GitVersioning)
-
-git.gitTagToVersionNumber := { tag: String =>
-  if(tag matches "[0-9]+\\..*") Some(tag)
-  else None
-}
-
-licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html"))
-
-useGpg := true
-
-scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/hmrclt/stub-data-generator"),
-    "scm:git@github.com:hmrclt/stub-data-generator.git"
+val compileDependencies = Seq(
+    "org.typelevel" %% "simulacrum" % "1.0.1",
+    "com.chuusai"          %% "shapeless"  % "2.3.3",
+    "org.typelevel" %% "cats-core" % "2.9.0",
+    "org.scalacheck" %% "scalacheck" % "1.17.0",
+    "io.github.amrhassan" %% "scalacheck-cats" % "0.4.0"
   )
-)
 
-developers := List(
-  Developer(
-    id            = "hmrclt",
-    name	        = "Luke Tebbs",
-    email         = "luke.tebbs@digital.hmrc.gov.uk",
-    url           = url("http://www.luketebbs.com/")
-  ),
-  Developer(
-    id            = "AndyHWChung",
-    name	        = "Andy Chung",
-    email         = "andrew.chung@digital.hmrc.gov.uk",
-    url           = url("https://github.com/AndyHWChung")
+val testDependencies = Seq(
+    "org.scalatest"         %% "scalatest"     % "3.2.15"  % Test,
+    "com.vladsch.flexmark"  %  "flexmark-all"  % "0.62.0" % Test,
+    "org.mockito"           %% "mockito-scala" % "1.5.11"  % Test,
+    "org.scalatestplus" %% "scalacheck-1-17" % "3.2.15.0" % Test,
+    "com.typesafe.play" %% "play-test"         % "2.8.8"  % Test,
+    "com.typesafe.play" %% "play-specs2"       % "2.8.8"  % Test
   )
-)
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
+lazy val stubDataGenerator = Project("stub-data-generator", file("."))
+  .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
+  .settings(
+    majorVersion := 0,
+    isPublicArtefact := true,
+    scalaVersion := scala2_12,
+    crossScalaVersions := Seq(scala2_12),
+    libraryDependencies ++= compileDependencies ++ testDependencies ++ {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 =>
+          List(compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full))
+        case _                       => Nil
+      }},
+    dependencyOverrides +=  "org.typelevel"        %% "cats-core"  % "2.9.0",
+    Compile / scalacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 => List("-Ypartial-unification")
+        case _                       => List("-Ymacro-annotations")
+      }})
