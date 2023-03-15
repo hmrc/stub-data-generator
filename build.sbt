@@ -20,7 +20,7 @@ val testDependencies = Seq(
 lazy val stubDataGenerator = Project("stub-data-generator", file("."))
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .settings(
-    majorVersion := 0,
+    majorVersion := 1,
     isPublicArtefact := true,
     scalaVersion := scala2_12,
     crossScalaVersions := Seq(scala2_12),
