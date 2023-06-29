@@ -19,7 +19,6 @@ package uk.gov.hmrc.smartstub
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import cats.implicits._
-import org.scalacheck.support.cats._
 
 /*
  * A MarkovChain implementation that will return a plausible/probable
@@ -66,11 +65,11 @@ class MarkovChain[A](
 
     val kvsets: Map[Seq[A],List[A]] = subsequences.map(
       x => (x.init, x.last)
-    ).groupBy(_._1).mapValues(_.map(_._2))
+    ).groupBy(_._1).fmap(_.map(_._2))
 
-    kvsets.mapValues{v =>
+    kvsets.fmap{v =>
 
-      val table = v.groupBy(identity).mapValues(_.size).map{
+      val table = v.groupBy(identity).fmap(_.size).map{
         case (a,b) => (b,const(a))
       }
 

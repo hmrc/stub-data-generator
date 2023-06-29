@@ -17,10 +17,10 @@
 package uk.gov.hmrc
 
 import org.scalacheck._
+
 import scala.language.implicitConversions
-import cats.Invariant
-import cats.Monad
-import scala.language.higherKinds
+//import org.scalacheck.cats.implicits._
+import cats.{Invariant, Monad}
 
 package object smartstub
     extends Enumerable.ToEnumerableOps
@@ -49,7 +49,7 @@ package object smartstub
     )
   }
 
-  implicit val longEnum = Enumerable.instances.longEnum
+  implicit val longEnum: Enumerable[Long] = Enumerable.instances.longEnum
 
   implicit class PatternContext(val sc: StringContext) extends AnyVal {
     def pattern(i: Any*): Enumerable[String] = Gen.pattern(

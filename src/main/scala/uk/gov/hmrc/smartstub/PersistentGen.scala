@@ -58,5 +58,5 @@ case class PersistentGen[K, V](
     en.size - state.values.count(_.isEmpty)
   }.toInt
 
-  override def clear = state.clear
+  override def clear = state.clear()
 }

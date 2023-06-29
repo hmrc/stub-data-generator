@@ -19,7 +19,7 @@ package uk.gov.hmrc.smartstub
 import org.scalacheck._
 import simulacrum._
 
-import scala.language.implicitConversions
+//import scala.language.implicitConversions
 
 @typeclass trait FromLong[A] {
   def size: Long  
@@ -70,10 +70,10 @@ import scala.language.implicitConversions
 
 object Enumerable {
   object instances {
-    implicit val longEnum = new Enumerable[Long] {
+    implicit val longEnum: Enumerable[Long] = new Enumerable[Long] {
       override def get(i: Long): Option[Long] = Some(i).filter{_ >= 0}
       def asLong(i: Long): Long = i
-      val size = Long.MaxValue
+      val size: Long = Long.MaxValue
     }
 
     implicit val ninoEnum: Enumerable[String] = pattern"ZZ 99 99 99 D"
@@ -85,16 +85,16 @@ object Enumerable {
         val weights = List(6, 7, 8, 9, 10, 5, 4, 3, 2)
         val pos = {weights zip in}.map {
           case (weight, char) => weight * char.asDigit
-        }.sum % checkString.size
+        }.sum % checkString.length
         checkString(pos)
       }
 
-      pattern"999999999".imap{ in =>
+      pattern"999999999".imap { in =>
         checkDigit(in).toString ++ in
-      }( _ match {
+      } {
         case s if s.head == checkDigit(s.tail) => s.tail
         case _ => throw new IllegalArgumentException
-      })
+      }
     }
 
     implicit val sortCodeEnum: Enumerable[String] = pattern"99-99-99"

@@ -25,7 +25,7 @@ trait Loader extends Any {
     val source = scala.io.Source.fromURL(resource)
 
     try {
-      val data = source.getLines
+      val data = source.getLines()
       val nocomments = data.filterNot(_.startsWith("#"))
       val freqTuples = nocomments.map(_.split("\t").toList).collect {
         case (f :: w :: _) => (w.filter(_.isDigit).toInt, const(f))
@@ -40,7 +40,7 @@ trait Loader extends Any {
     val resource = this.getClass.getResource(file)
     val source = scala.io.Source.fromURL(resource)
     try {
-      val data = scala.io.Source.fromURL(resource).getLines
+      val data = scala.io.Source.fromURL(resource).getLines()
       oneOf(data.filterNot(_.startsWith("#")).toList)
     } finally {
       source.close()

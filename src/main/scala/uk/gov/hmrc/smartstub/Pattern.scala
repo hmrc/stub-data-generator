@@ -31,7 +31,7 @@ trait Pattern extends Any {
     private val charPermutations = chars.map {
       _.size.toLong
     }
-    val size = charPermutations.product
+    val size: Long = charPermutations.product
 
     private def maxValue = size - 1
 
