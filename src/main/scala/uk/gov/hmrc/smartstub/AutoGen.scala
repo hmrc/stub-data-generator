@@ -60,7 +60,7 @@ object AutoGen extends LowPriorityGenProviderInstances {
 
   implicit def providerStringNamed: String => GenProvider[String] = s => instance ({
     s.toLowerCase match {
-      case "forename" | "firstname" => Gen.forename
+      case "forename" | "firstname" => Gen.forename()
       case "surname" | "lastname" | "familyname" => Gen.surname
       case x if x.toLowerCase.contains("address") =>
         Gen.ukAddress.map{_.mkString(", ")}
@@ -122,7 +122,7 @@ object AutoGen extends LowPriorityGenProviderInstances {
    witness: Witness.Aux[K],
    hGenProvider: Lazy[String => GenProvider[H]],
    tGenProvider: Lazy[GenProvider[T]],
-   l: shapeless.ops.coproduct.Length.Aux[H :+: T, L],
+   //l: shapeless.ops.coproduct.Length.Aux[H :+: T, L],
    i: ToInt[L]
   ): GenProvider[FieldType[K,H] :+: T] = {
     val headGenerator = hGenProvider.value(witness.value.name).gen.map(h => Inl(field[K](h)))
@@ -158,7 +158,7 @@ trait LowPriorityGenProviderInstances {
   (implicit
    hGenProvider: Lazy[GenProvider[H]],
    tGenProvider: Lazy[GenProvider[T]],
-   l: shapeless.ops.coproduct.Length.Aux[H :+: T, L],
+   //l: shapeless.ops.coproduct.Length.Aux[H :+: T, L],
    i: ToInt[L]
   ): GenProvider[FieldType[K,H] :+: T] = {
     val headGenerator = hGenProvider.value.gen.map(h => Inl(field[K](h)))

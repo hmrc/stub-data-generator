@@ -18,20 +18,15 @@ package uk.gov.hmrc.smartstub
 
 trait Pattern extends Any {
 
-  def pattern[T](pattern: Seq[Seq[T]]) = new Enumerable[Seq[T]] {
+  def pattern[T](pattern: Seq[Seq[T]]): Enumerable[Seq[T]] = new Enumerable[Seq[T]] {
 
-    private val chars = pattern.reverse.map(_.zipWithIndex.toMap.mapValues {
-      _.toLong
-    })
-    private val charsR = chars.map {
-      _.map {
-        _.swap
-      }
-    }
+    private val chars = pattern.reverse.map(_.zipWithIndex.toMap.view.mapValues(_.toLong).toMap)
+    private val charsR = chars.map(_.map(_.swap))
+
     private val charPermutations = chars.map {
       _.size.toLong
     }
-    val size = charPermutations.product
+    val size: Long = charPermutations.product
 
     private def maxValue = size - 1
 

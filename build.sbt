@@ -1,20 +1,21 @@
-val scala2_12 = "2.12.15"
+val scala2_13 = "2.13.10"
 
 val compileDependencies = Seq(
-    "org.typelevel" %% "simulacrum" % "1.0.1",
-    "com.chuusai"          %% "shapeless"  % "2.3.3",
-    "org.typelevel" %% "cats-core" % "2.9.0",
-    "org.scalacheck" %% "scalacheck" % "1.17.0",
-    "io.github.amrhassan" %% "scalacheck-cats" % "0.4.0"
+    "org.typelevel"       %% "simulacrum"      % "1.0.1",
+    "com.chuusai"         %% "shapeless"       % "2.3.10",
+    "org.typelevel"       %% "cats-core"       % "2.9.0",
+    "org.scalacheck"      %% "scalacheck"      % "1.17.0",
+    "io.chrisdavenport" %% "cats-scalacheck" % "0.3.2"
   )
 
 val testDependencies = Seq(
-    "org.scalatest"         %% "scalatest"     % "3.2.15"  % Test,
-    "com.vladsch.flexmark"  %  "flexmark-all"  % "0.62.0" % Test,
-    "org.mockito"           %% "mockito-scala" % "1.5.11"  % Test,
-    "org.scalatestplus" %% "scalacheck-1-17" % "3.2.15.0" % Test,
-    "com.typesafe.play" %% "play-test"         % "2.8.8"  % Test,
-    "com.typesafe.play" %% "play-specs2"       % "2.8.8"  % Test
+    "org.scalatest"         %% "scalatest"       % "3.2.16"   % Test,
+    "com.vladsch.flexmark"  %  "flexmark-all"    % "0.64.8"   % Test,
+    "org.mockito"           %% "mockito-scala"   % "1.17.14"  % Test,
+    "org.scalatestplus"     %% "scalacheck-1-17" % "3.2.16.0" % Test,
+    "com.typesafe.play"     %% "play-test"       % "2.8.19"   % Test,
+    "com.typesafe.play"     %% "play-specs2"     % "2.8.19"   % Test,
+    "io.chrisdavenport" %% "cats-scalacheck" % "0.3.2" % Test
   )
 
 lazy val stubDataGenerator = Project("stub-data-generator", file("."))
@@ -22,8 +23,8 @@ lazy val stubDataGenerator = Project("stub-data-generator", file("."))
   .settings(
     majorVersion := 1,
     isPublicArtefact := true,
-    scalaVersion := scala2_12,
-    crossScalaVersions := Seq(scala2_12),
+    scalaVersion := scala2_13,
+    crossScalaVersions := Seq(scala2_13),
     libraryDependencies ++= compileDependencies ++ testDependencies ++ {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, n)) if n <= 12 =>
