@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc
 
-import org.scalacheck._
+import org.scalacheck.Gen
 
 import scala.language.implicitConversions
-//import org.scalacheck.cats.implicits._
 import cats.{Invariant, Monad}
 
 package object smartstub

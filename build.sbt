@@ -5,7 +5,7 @@ val compileDependencies = Seq(
     "com.chuusai"         %% "shapeless"       % "2.3.10",
     "org.typelevel"       %% "cats-core"       % "2.9.0",
     "org.scalacheck"      %% "scalacheck"      % "1.17.0",
-    "io.chrisdavenport" %% "cats-scalacheck" % "0.3.2" % Test
+    "io.chrisdavenport" %% "cats-scalacheck" % "0.3.2"
   )
 
 val testDependencies = Seq(

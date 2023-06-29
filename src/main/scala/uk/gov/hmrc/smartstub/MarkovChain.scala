@@ -19,6 +19,7 @@ package uk.gov.hmrc.smartstub
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import cats.implicits._
+import org.scalacheck.cats.implicits._
 
 /*
  * A MarkovChain implementation that will return a plausible/probable

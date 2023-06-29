@@ -30,13 +30,13 @@ case class PersistentGen[K, V](
     state -= key; this
   }
 
-  def +=(kv: (K, V)) = {
+  def addOne(kv: (K, V)): PersistentGen.this.type = {
     val (k, v) = kv
     state(k) = Some(v)
     this
   }
 
-  def -=(key: K) = {
+  def subtractOne(key: K): PersistentGen.this.type = {
     state(key) = None
     this
   }
