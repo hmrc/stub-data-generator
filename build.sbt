@@ -13,8 +13,6 @@ val testDependencies = Seq(
     "com.vladsch.flexmark"  %  "flexmark-all"    % "0.64.8"   % Test,
     "org.mockito"           %% "mockito-scala"   % "1.17.14"  % Test,
     "org.scalatestplus"     %% "scalacheck-1-17" % "3.2.16.0" % Test,
-    "com.typesafe.play"     %% "play-test"       % "2.8.19"   % Test,
-    "com.typesafe.play"     %% "play-specs2"     % "2.8.19"   % Test,
     "io.chrisdavenport" %% "cats-scalacheck" % "0.3.2" % Test
   )
 
