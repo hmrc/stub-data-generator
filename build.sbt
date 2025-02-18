@@ -1,4 +1,4 @@
-val scala2_13 = "2.13.10"
+val scala2_13 = "2.13.12"
 
 val compileDependencies = Seq(
     "org.typelevel"       %% "simulacrum"      % "1.0.1",
