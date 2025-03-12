@@ -22,10 +22,8 @@ import scala.language.implicitConversions
 import cats.{Invariant, Monad}
 
 package object smartstub
-    extends Enumerable.ToEnumerableOps
-    with ToLong.ToToLongOps
-    with FromLong.ToFromLongOps
-{
+  extends Enumerable{
+
   implicit def genToRich[A](g: Gen[A]): RichGen[A] = RichGen(g)
 
   implicit def enumToGen[A](e: Enumerable[A]): Gen[A] = e.gen

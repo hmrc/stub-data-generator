@@ -32,8 +32,9 @@ import simulacrum._
   def apply(i: Long): A = get(i).getOrElse {
     throw new IndexOutOfBoundsException
   }
+  
+  def gen: Gen[A] = Gen.choose(0L, size - 1).map{apply(_)}
 
-  def gen: Gen[A] = Gen.choose(0, size - 1).map{apply(_)}
   def arbitrary: Arbitrary[A] = Arbitrary { gen }
 }
 
