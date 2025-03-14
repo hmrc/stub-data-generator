@@ -28,7 +28,7 @@ trait Loader extends Any {
       val data = source.getLines()
       val nocomments = data.filterNot(_.startsWith("#"))
       val freqTuples = nocomments.map(_.split("\t").toList).collect {
-        case (f :: w :: _) => (w.filter(_.isDigit).toInt, const(f))
+        case (f :: w :: _) => (w.collect { case c if c.isDigit => c }.toInt, const(f))
       }.toSeq
       frequency(freqTuples: _*)
     } finally {

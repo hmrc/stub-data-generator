@@ -22,7 +22,7 @@ import scala.collection.mutable.{ Map => MMap }
 case class PersistentGen[K, V](
                                 gen: Gen[V],
                                 state: MMap[K, Option[V]],
-                                keyFilter: K => Boolean = { _: K => true }
+                                keyFilter: K => Boolean = { (_: K) => true }
                               )(implicit en: Enumerable[K])
   extends MMap[K, V] {
 

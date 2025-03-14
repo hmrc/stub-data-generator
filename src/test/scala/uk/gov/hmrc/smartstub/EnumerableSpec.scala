@@ -23,8 +23,10 @@ class EnumerableSpec extends AnyFlatSpec with Checkers {
 
   "A Nino" should "convert back and from a Long unchanged" in {
     import Enumerable.instances.ninoEnum
-    check{(a: Long) =>
-      val t = {a % ninoEnum.size}.abs
-      t == ninoEnum.apply(t).asLong}
+    check { (a: Long) =>
+      val t = (a % ninoEnum.size).abs
+      val result = ninoEnum.apply(t)
+      ninoEnum.asLong(result) == t
+    }
   }
 }

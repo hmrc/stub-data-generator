@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.smartstub
 
-import org.scalacheck._
-import Gen._
+import org.scalacheck.*
+import org.scalacheck.Gen.{alphaUpperChar, choose, frequency, listOfN, numChar}
 
 trait Addresses extends Any {
   import Addresses._

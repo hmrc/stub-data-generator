@@ -17,11 +17,9 @@
 package uk.gov.hmrc.smartstub
 
 import org.scalacheck._
-import simulacrum._
 
-//import scala.language.implicitConversions
 
-@typeclass trait FromLong[A] {
+ trait FromLong[A] {
   def size: Long  
   def get(i: Long): Option[A] = i match {
     case low if low < 0 => None
@@ -32,16 +30,17 @@ import simulacrum._
   def apply(i: Long): A = get(i).getOrElse {
     throw new IndexOutOfBoundsException
   }
+  
+  def gen: Gen[A] = Gen.choose(0L, size - 1).map{apply(_)}
 
-  def gen: Gen[A] = Gen.choose(0, size - 1).map{apply(_)}
   def arbitrary: Arbitrary[A] = Arbitrary { gen }
 }
 
-@typeclass trait ToLong[A] {
+trait ToLong[A] {
   def asLong(i: A): Long
 }
 
-@typeclass trait Enumerable[A] extends FromLong[A] with ToLong[A] {
+trait Enumerable[A] extends FromLong[A] with ToLong[A] {
 
   def head = apply(0L)
   def last = apply(size - 1)

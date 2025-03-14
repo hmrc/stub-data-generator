@@ -25,11 +25,12 @@ class AutoGenSpec extends AnyFlatSpec with Matchers {
   import AutoGen._
 
   "The AutoGen" should "derive a Gen for a HList" in {
-    import shapeless.labelled._
-    import shapeless._
-    val x = 'forename
-    val y = 'surname
-    "val gen = AutoGen[FieldType[x.type,String] :: FieldType[y.type,String] :: HNil]" should compile
+    import shapeless3.deriving._
+    import shapeless3._
+
+    val x = "forename"
+    val y = "surname"
+    "val gen = AutoGen[(FieldType[x.type,String], FieldType[y.type,String])]" should compile
   }
 
   it should "derive a Gen for simple values" in {
@@ -50,7 +51,7 @@ class AutoGenSpec extends AnyFlatSpec with Matchers {
     "val gen: Gen[Blah] = AutoGen[Blah]" should compile
   }
 
-  it should "derive a Gen[A] for sealed traits" in {
+  it should "rive a Gen[A] for sealed traits" in {
     sealed trait AorB
     case class A(i: Int) extends AorB
     case class B(s: String) extends AorB
