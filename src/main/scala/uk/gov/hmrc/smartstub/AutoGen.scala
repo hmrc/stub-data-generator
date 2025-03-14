@@ -24,6 +24,7 @@ import org.scalacheck.Gen
 import scala.compiletime.constValue
 
 
+
 object AutoGen extends LowPriorityGenProviderInstances {
 
   trait GenProvider[A] {
@@ -97,6 +98,10 @@ object AutoGen extends LowPriorityGenProviderInstances {
     instance(hGenProvider.gen.map(mirror.fromTuple))
 
   // HList instances
+  type FieldType[K, V] = V
+
+  implicit def genProviderByFieldName[H](implicit gp: GenProvider[H]): String => GenProvider[H] =
+    (_: String) => gp
 
   implicit val providerHNil: GenProvider[EmptyTuple] = instance(Gen.const(EmptyTuple))
 
@@ -107,7 +112,6 @@ object AutoGen extends LowPriorityGenProviderInstances {
    tGenProvider: => GenProvider[T]
   ): GenProvider[H *: T] = {
     val fieldName: String = valueOfK.value
-
     val headGenerator = hGenProvider(fieldName).gen.flatMap(f =>
       tGenProvider.gen.map { t =>
         f *: t
@@ -186,7 +190,6 @@ trait LowPriorityGenProviderInstances {
       case t: Tuple => t.asInstanceOf[H *: T]
     }
     val length = valueOfL.value
-//    val length = constValue[L]
 
     if(length == 1){
       instance(headGenerator)

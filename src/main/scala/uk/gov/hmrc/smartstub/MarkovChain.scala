@@ -19,7 +19,6 @@ package uk.gov.hmrc.smartstub
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import cats.implicits._
-import org.scalacheck.cats.implicits._
 
 /*
  * A MarkovChain implementation that will return a plausible/probable
@@ -46,19 +45,25 @@ class MarkovChain[A](
     }
 
   def sized(numElems: Int): Gen[Vector[A]] = {
-    repeatM[Gen,(Vector[A],Option[A])](
-      next().map{a => (a.toVector,a)} , {
-        case (acc, l) => l match {
-          case Some(_) =>
-            next(trimSeed(acc)).map {
-              a => (acc ++ a.toVector, a)
-            }
-          case None => (acc,l)
-        }
-      },
-      numElems
-    )
-  }.map(_._1)
+    // Helper function to recursively generate elements
+    def loop(remaining: Int,  acc: Vector[A], lastOpt:Option[A]): Gen[Vector[A]]= {
+      if (remaining <= 0 ) Gen.const(acc)
+      else lastOpt match {
+        case None => Gen.const(acc) // No more elements can be generated
+        case Some(_) =>
+          next(trimSeed(acc)).flatMap {
+            case Some(nextVal) => loop(remaining - 1, acc :+ nextVal, Some(nextVal))
+            case None => Gen.const(acc)  // Chain terminated
+          }
+      }
+    }
+    
+    // Start the generation process
+    next().flatMap {
+      case Some(firstVal) => loop(numElems - 1 , Vector(firstVal), Some(firstVal))
+      case None => Gen.const(Vector.empty[A])
+    }
+  }
 
   private def markov(ws: Int): Map[Seq[A], Gen[A]] = {
     val subsequences: List[Seq[A]] =
@@ -83,7 +88,11 @@ class MarkovChain[A](
 
   def next(seed: Seq[A] = start): Gen[Option[A]] = {
     val last = trimSeed(seed)
-    multimap.get(last.size).flatMap(_.get(last)).sequence
+    val genOpt = multimap.get(last.size).flatMap(_.get(last))
+    genOpt match {
+      case Some(gen) => gen.map(Some(_))
+      case None => Gen.const(None)
+    }
   }
 
 }
