@@ -17,12 +17,14 @@
 package uk.gov.hmrc.smartstub
 
 import org.scalacheck.*
+
 import java.time.LocalDate
 import scala.compiletime.constValue
-import scala.deriving.Mirror
 import org.scalacheck.Gen
 import scala.compiletime.constValue
-
+import scala.deriving.Mirror
+import shapeless3.deriving.K0.Generic._
+import scala.reflect.Selectable.reflectiveSelectable
 
 
 object AutoGen extends LowPriorityGenProviderInstances {
@@ -36,6 +38,42 @@ object AutoGen extends LowPriorityGenProviderInstances {
   // instance constructor
   def instance[A](f: Gen[A]): GenProvider[A] = new GenProvider[A] {
     override val gen: Gen[A] = f
+  }
+
+  object GenProvider {
+    def apply[A](implicit gp: GenProvider[A]): Gen[A] = gp.gen
+
+    def instance[A](f: Gen[A]): GenProvider[A] = new GenProvider[A] {
+      override val gen: Gen[A] = f
+    }
+  }
+
+  trait TupleSize[T <: Tuple] {
+    def size: Int
+  }
+
+  object TupleSize {
+    given empty: TupleSize[EmptyTuple] with {
+      def size: Int = 0
+    }
+
+    given nonEmpty[H, T <: Tuple](using tail: TupleSize[T]): TupleSize[H *: T] with {
+      def size: Int = 1 + tail.size
+    }
+  }
+
+  // Define SumGenProvider for a tuple T (the alternatives for a sealed trait)
+  trait SumGenProvider[T <: Tuple] {
+    val gen: Gen[Int]
+  }
+
+  object SumGenProvider {
+    def apply[T <: Tuple](using sg: SumGenProvider[T]): SumGenProvider[T] = sg
+
+    // Provide an instance that uses the TupleSize to determine the number of alternatives.
+    given [T <: Tuple](using ts: TupleSize[T]): SumGenProvider[T] with {
+      override val gen: Gen[Int] = Gen.choose(0, ts.size - 1)
+    }
   }
 
   implicit def providerUnnamed[A](implicit g: GenProvider[A]): String => GenProvider[A] = _ => g
@@ -89,13 +127,23 @@ object AutoGen extends LowPriorityGenProviderInstances {
     _ => instance(Gen.oneOf(true,false))
 
   // generic instance
-
-  implicit def providerGeneric[A, H, T]
+  implicit def providerGeneric[A]
   (implicit
-   mirror: Mirror.ProductOf[A],
-   hGenProvider: => GenProvider[mirror.MirroredElemTypes]
+   generic: Mirror.ProductOf[A],
+   hGenProvider: => GenProvider[generic.MirroredElemTypes]
   ): GenProvider[A] =
-    instance(hGenProvider.gen.map(mirror.fromTuple))
+    instance(hGenProvider.gen.map(t => generic.fromProduct(t)))
+
+  implicit def providerSum[A]
+  (implicit
+   s: Mirror.SumOf[A],
+   sumProvider: SumGenProvider[s.MirroredElemTypes]
+  ): GenProvider[A] =
+    GenProvider.instance(
+    sumProvider.gen.map { i =>
+      s.asInstanceOf[{ def fromOrdinal(i: Int): A }].fromOrdinal(i)
+    }
+  )
 
   // HList instances
   type FieldType[K, V] = V

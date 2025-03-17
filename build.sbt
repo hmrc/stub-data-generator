@@ -21,5 +21,5 @@ lazy val stubDataGenerator = Project("stub-data-generator", file("."))
     scalaVersion := "3.3.4",
     crossScalaVersions := Seq("3.3.4"),
     libraryDependencies ++= compileDependencies ++ testDependencies,
-    Compile / scalacOptions ++= List("-feature","-language:implicitConversions")
+    Compile / scalacOptions ++= List("-feature","-language:implicitConversions","-Wconf:msg=unused local definition:s","-Wconf:msg=unused import:s")
   )

@@ -40,7 +40,7 @@ object Companies extends Loader {
   def company: Gen[String] = for {
     size <- Gen.choose(5, 20)
     base <- companyBase(size)
-    suffix <- Gen.oneOf("Ltd.,Group,Inc.,Plc.,Holdings".split(",")).sometimes
+    suffix <- Gen.oneOf("Ltd.,Group,Inc.,Plc.,Holdings".split(",").toIndexedSeq).sometimes
   } yield {
     List(Some(base), suffix).flatten.mkString(" ")
   }
