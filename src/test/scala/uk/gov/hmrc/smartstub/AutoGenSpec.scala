@@ -51,7 +51,7 @@ class AutoGenSpec extends AnyFlatSpec with Matchers {
     "val gen: Gen[Blah] = AutoGen[Blah]" should compile
   }
 
-  it should "rive a Gen[A] for sealed traits" in {
+  it should "Drive a Gen[A] for sealed traits" in {
     sealed trait AorB
     case class A(i: Int) extends AorB
     case class B(s: String) extends AorB

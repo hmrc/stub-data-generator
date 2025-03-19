@@ -22,7 +22,7 @@ import scala.language.implicitConversions
 import cats.{Invariant, Monad}
 
 package object smartstub
-  extends Enumerable{
+  extends Enumerable {
 
   // Implement required methods from Enumerable traits
   def size: Long = Long.MaxValue // Default implementation, adjust as needed
