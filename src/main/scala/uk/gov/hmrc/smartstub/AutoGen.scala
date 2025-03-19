@@ -133,6 +133,9 @@ object AutoGen extends LowPriorityGenProviderInstances {
    hGenProvider: => GenProvider[generic.MirroredElemTypes]
   ): GenProvider[A] =
     instance(hGenProvider.gen.map(t => generic.fromProduct(t)))
+  extension [A](mirror: Mirror.SumOf[A])
+    def safeFromOrdinal(i: Int): A =
+      mirror.asInstanceOf[{ def fromOrdinal(i: Int): A}].fromOrdinal(i)
 
   implicit def providerSum[A]
   (implicit
@@ -140,9 +143,7 @@ object AutoGen extends LowPriorityGenProviderInstances {
    sumProvider: SumGenProvider[s.MirroredElemTypes]
   ): GenProvider[A] =
     GenProvider.instance(
-    sumProvider.gen.map { i =>
-      s.asInstanceOf[{ def fromOrdinal(i: Int): A }].fromOrdinal(i)
-    }
+    sumProvider.gen.map{ i => s.safeFromOrdinal(i)}
   )
 
   // HList instances
