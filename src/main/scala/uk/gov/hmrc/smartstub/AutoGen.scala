@@ -21,7 +21,6 @@ import org.scalacheck.*
 import java.time.LocalDate
 import scala.compiletime.constValue
 import org.scalacheck.Gen
-import scala.compiletime.constValue
 import scala.deriving.Mirror
 import shapeless3.deriving.K0.Generic._
 import scala.reflect.Selectable.reflectiveSelectable
@@ -143,8 +142,9 @@ object AutoGen extends LowPriorityGenProviderInstances {
    sumProvider: SumGenProvider[s.MirroredElemTypes]
   ): GenProvider[A] =
     GenProvider.instance(
-    sumProvider.gen.map{ i => s.safeFromOrdinal(i)}
-  )
+      sumProvider.gen.map { i => s.safeFromOrdinal(i)
+      }
+    )
 
   // HList instances
   type FieldType[K, V] = V
@@ -169,6 +169,14 @@ object AutoGen extends LowPriorityGenProviderInstances {
     instance(headGenerator)
   }
 
+  private[smartstub] def coproductGenHelper[H, T <: Tuple](
+                                                            headGen: Gen[H *: T],
+                                                            tailGen: Gen[H *: T],
+                                                            length: Int
+                                                          ): GenProvider[H *: T] =
+    if (length == 1) instance(headGen)
+    else instance(Gen.oneOf(tailGen, headGen))
+
   // Coproduct instances
   override implicit def providerCCons[K <: String & Singleton, H, T <: Tuple, L <: Int]
   (implicit
@@ -186,14 +194,9 @@ object AutoGen extends LowPriorityGenProviderInstances {
     }
 
     val tailGenerator: Gen[H *: T] = tGenProvider.gen.map {
-      case t: Tuple => t.asInstanceOf[H *: T]
+      t => t.asInstanceOf[H *: T]
     }
-
-    if (length == 1) {
-      instance(headGenerator)
-    } else {
-      instance(Gen.oneOf(tailGenerator, headGenerator))
-    }
+    coproductGenHelper(headGenerator, tailGenerator, valueOfL.value)
   }
 
 
@@ -228,7 +231,7 @@ trait LowPriorityGenProviderInstances {
   ): GenProvider[H *: T] = {
 
     val fieldName = valueOfK.value
-    
+
     val headGenerator = hGenProvider(fieldName).gen.flatMap { h =>
       tGenProvider.gen.map { t =>
         h *: t
@@ -236,15 +239,8 @@ trait LowPriorityGenProviderInstances {
     }
 
     val tailGenerator: Gen[H *: T] = tGenProvider.gen.map {
-      case t: Tuple => t.asInstanceOf[H *: T]
+      t => t.asInstanceOf[H *: T]
     }
-    val length = valueOfL.value
-
-    if(length == 1){
-      instance(headGenerator)
-    } else {
-      instance(Gen.oneOf(tailGenerator, headGenerator))
-    }
+    AutoGen.coproductGenHelper(headGenerator, tailGenerator, valueOfL.value)
   }
 }
-

@@ -18,7 +18,6 @@ package uk.gov.hmrc.smartstub
 
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
-import cats.implicits._
 
 /*
  * A MarkovChain implementation that will return a plausible/probable
@@ -31,18 +30,23 @@ import cats.implicits._
  * empty seed is supplied.
  */
 class MarkovChain[A](
-  val data: Seq[A],
-  val windowSize: Int,
-  val terminus: Seq[A] = Nil
-) {
+                      val data: Seq[A],
+                      val windowSize: Int,
+                      val terminus: Seq[A] = Nil
+                    ) {
+  //validate data and windowSize on construction.
+  require(windowSize > 0, "windowSize must be greater than 0")
+  require(data.nonEmpty, "Input data must not be empty")
+  require(data.length > windowSize, "Input data must be longer than window size")
 
   private val multimap: Map[Int, Map[Seq[A], Gen[A]]] =
     (1 to windowSize).map(i => i -> markov(i)).toMap
 
-  private val start: Seq[A] =
-    terminus.some.filter(_.nonEmpty).getOrElse {
-      multimap(1).keySet.head
-    }
+  //In cases where terminus is empty and data is large, accessing start eagerly can be inefficient.Prevents unnecessary computation.
+  private lazy val start: Seq[A] = terminus.nonEmpty match {
+    case true  => terminus
+    case false => multimap(1).keySet.head
+  }
 
   def sized(numElems: Int): Gen[Vector[A]] = {
     // Helper function to recursively generate elements
@@ -57,7 +61,7 @@ class MarkovChain[A](
           }
       }
     }
-    
+
     // Start the generation process
     next().flatMap {
       case Some(firstVal) => loop(numElems - 1 , Vector(firstVal), Some(firstVal))
@@ -69,17 +73,16 @@ class MarkovChain[A](
     val subsequences: List[Seq[A]] =
       data.view.iterator.sliding(ws + 1).withPartial(false).toList
 
-    val kvsets: Map[Seq[A],List[A]] = subsequences.map(
-      x => (x.init, x.last)
-    ).groupBy(_._1).fmap(_.map(_._2))
+    val kvsets: Map[Seq[A], List[A]] = subsequences
+      .map(x => (x.init, x.last))
+      .groupBy(_._1)
+      .map { case (k, v) => k -> v.map(_._2) }
 
-    kvsets.fmap{v =>
-
-      val table = v.groupBy(identity).fmap(_.size).map{
-        case (a,b) => (b,const(a))
+    kvsets.map { case (k, vList) =>
+      val table = vList.groupBy(identity).view.mapValues(_.size).toMap.map {
+        case (a, count) => count -> const(a)
       }
-
-      frequency(table.toSeq: _*)
+      k -> frequency(table.toSeq: _*)
     }
   }
 
