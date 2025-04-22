@@ -26,9 +26,6 @@ class AutoGenSpec extends AnyFlatSpec with Matchers {
   import AutoGen._
 
   "The AutoGen" should "derive a Gen for a HList" in {
-    import shapeless3.deriving._
-    import shapeless3._
-
     val x = "forename"
     val y = "surname"
     "val gen = AutoGen[(FieldType[x.type,String], FieldType[y.type,String])]" should compile

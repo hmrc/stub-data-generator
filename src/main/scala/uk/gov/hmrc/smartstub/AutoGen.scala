@@ -22,7 +22,6 @@ import java.time.LocalDate
 import scala.compiletime.constValue
 import org.scalacheck.Gen
 import scala.deriving.Mirror
-import shapeless3.deriving.K0.Generic._
 import scala.reflect.Selectable.reflectiveSelectable
 
 
