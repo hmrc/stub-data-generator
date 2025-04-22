@@ -18,8 +18,6 @@ package uk.gov.hmrc.smartstub
 
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
-import cats.implicits._
-import org.scalacheck.cats.implicits._
 
 /*
  * A MarkovChain implementation that will return a plausible/probable
@@ -32,49 +30,59 @@ import org.scalacheck.cats.implicits._
  * empty seed is supplied.
  */
 class MarkovChain[A](
-  val data: Seq[A],
-  val windowSize: Int,
-  val terminus: Seq[A] = Nil
-) {
+                      val data: Seq[A],
+                      val windowSize: Int,
+                      val terminus: Seq[A] = Nil
+                    ) {
+  //validate data and windowSize on construction.
+  require(windowSize > 0, "windowSize must be greater than 0")
+  require(data.nonEmpty, "Input data must not be empty")
+  require(data.length > windowSize, "Input data must be longer than window size")
 
   private val multimap: Map[Int, Map[Seq[A], Gen[A]]] =
     (1 to windowSize).map(i => i -> markov(i)).toMap
 
-  private val start: Seq[A] =
-    terminus.some.filter(_.nonEmpty).getOrElse {
-      multimap(1).keySet.head
-    }
+  //In cases where terminus is empty and data is large, accessing start eagerly can be inefficient.Prevents unnecessary computation.
+  private lazy val start: Seq[A] = terminus.nonEmpty match {
+    case true  => terminus
+    case false => multimap(1).keySet.head
+  }
 
   def sized(numElems: Int): Gen[Vector[A]] = {
-    repeatM[Gen,(Vector[A],Option[A])](
-      next().map{a => (a.toVector,a)} , {
-        case (acc, l) => l match {
-          case Some(_) =>
-            next(trimSeed(acc)).map {
-              a => (acc ++ a.toVector, a)
-            }
-          case None => (acc,l)
-        }
-      },
-      numElems
-    )
-  }.map(_._1)
+    // Helper function to recursively generate elements
+    def loop(remaining: Int,  acc: Vector[A], lastOpt:Option[A]): Gen[Vector[A]]= {
+      if (remaining <= 0 ) Gen.const(acc)
+      else lastOpt match {
+        case None => Gen.const(acc) // No more elements can be generated
+        case Some(_) =>
+          next(trimSeed(acc)).flatMap {
+            case Some(nextVal) => loop(remaining - 1, acc :+ nextVal, Some(nextVal))
+            case None => Gen.const(acc)  // Chain terminated
+          }
+      }
+    }
+
+    // Start the generation process
+    next().flatMap {
+      case Some(firstVal) => loop(numElems - 1 , Vector(firstVal), Some(firstVal))
+      case None => Gen.const(Vector.empty[A])
+    }
+  }
 
   private def markov(ws: Int): Map[Seq[A], Gen[A]] = {
     val subsequences: List[Seq[A]] =
       data.view.iterator.sliding(ws + 1).withPartial(false).toList
 
-    val kvsets: Map[Seq[A],List[A]] = subsequences.map(
-      x => (x.init, x.last)
-    ).groupBy(_._1).fmap(_.map(_._2))
+    val kvsets: Map[Seq[A], List[A]] = subsequences
+      .map(x => (x.init, x.last))
+      .groupBy(_._1)
+      .map { case (k, v) => k -> v.map(_._2) }
 
-    kvsets.fmap{v =>
-
-      val table = v.groupBy(identity).fmap(_.size).map{
-        case (a,b) => (b,const(a))
+    kvsets.map { case (k, vList) =>
+      val table = vList.groupBy(identity).view.mapValues(_.size).toMap.map {
+        case (a, count) => count -> const(a)
       }
-
-      frequency(table.toSeq: _*)
+      k -> frequency(table.toSeq: _*)
     }
   }
 
@@ -83,7 +91,11 @@ class MarkovChain[A](
 
   def next(seed: Seq[A] = start): Gen[Option[A]] = {
     val last = trimSeed(seed)
-    multimap.get(last.size).flatMap(_.get(last)).sequence
+    val genOpt = multimap.get(last.size).flatMap(_.get(last))
+    genOpt match {
+      case Some(gen) => gen.map(Some(_))
+      case None => Gen.const(None)
+    }
   }
 
 }

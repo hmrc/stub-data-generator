@@ -19,17 +19,16 @@ package uk.gov.hmrc.smartstub
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalacheck.Gen
+import uk.gov.hmrc.smartstub.AutoGen.GenProvider
 
 class AutoGenSpec extends AnyFlatSpec with Matchers {
 
   import AutoGen._
 
   "The AutoGen" should "derive a Gen for a HList" in {
-    import shapeless.labelled._
-    import shapeless._
-    val x = 'forename
-    val y = 'surname
-    "val gen = AutoGen[FieldType[x.type,String] :: FieldType[y.type,String] :: HNil]" should compile
+    val x = "forename"
+    val y = "surname"
+    "val gen = AutoGen[(FieldType[x.type,String], FieldType[y.type,String])]" should compile
   }
 
   it should "derive a Gen for simple values" in {
@@ -50,7 +49,7 @@ class AutoGenSpec extends AnyFlatSpec with Matchers {
     "val gen: Gen[Blah] = AutoGen[Blah]" should compile
   }
 
-  it should "derive a Gen[A] for sealed traits" in {
+  it should "Drive a Gen[A] for sealed traits" in {
     sealed trait AorB
     case class A(i: Int) extends AorB
     case class B(s: String) extends AorB
@@ -104,4 +103,43 @@ class AutoGenSpec extends AnyFlatSpec with Matchers {
     "val gen1 = AutoGen[D]" should compile
     "val gen2 = AutoGen[LocalDate]" should compile
   }
+
+  it should "generate a non-empty string" in {
+    val gen = AutoGen[String]
+    val sample = gen.sample
+    sample shouldBe defined
+    sample.get should not be empty
+  }
+  it should "generate LocalDate in the past for DOB fields" in {
+    val gen = AutoGen[java.time.LocalDate]
+    val sample = gen.sample
+    sample shouldBe defined
+    sample.get.isBefore(java.time.LocalDate.now) shouldBe true
+  }
+  it should "generate integers in the range 1 to 1000" in {
+    val gen = AutoGen[Int]
+    val samples = List.fill(100)(gen.sample).flatten
+    all(samples) should (be >= 1 and be <= 1000)
+  }
+  it should "generate both Some and None for Option values" in {
+    given GenProvider[Int] = AutoGen.instance(Gen.choose(1, 100))
+    given GenProvider[Option[Int]] = AutoGen.instance(Gen.option(summon[GenProvider[Int]].gen))
+
+    val gen = AutoGen[Option[Int]]
+    val samples = List.fill(100)(gen.sample).flatten
+
+    samples.exists(_.isDefined) shouldBe true
+    samples.exists(_.isEmpty) shouldBe true
+  }
+  it should "generate non-empty List of strings" in {
+    given GenProvider[String] = AutoGen.instance(Gen.alphaStr)
+    given GenProvider[List[String]] = AutoGen.instance(Gen.listOf(summon[GenProvider[String]].gen))
+
+    val gen = AutoGen[List[String]]
+    val sample = gen.sample
+
+    sample shouldBe defined
+    sample.get.nonEmpty shouldBe true
+  }
 }
+

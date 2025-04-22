@@ -22,10 +22,15 @@ import scala.language.implicitConversions
 import cats.{Invariant, Monad}
 
 package object smartstub
-    extends Enumerable.ToEnumerableOps
-    with ToLong.ToToLongOps
-    with FromLong.ToFromLongOps
-{
+  extends Enumerable {
+
+  // Implement required methods from Enumerable traits
+  def size: Long = Long.MaxValue // Default implementation, adjust as needed
+
+  override def asLong(i: Nothing): Long = throw new UnsupportedOperationException(
+    "Cannot convert Nothing to Long in base Enumerable"
+  )
+
   implicit def genToRich[A](g: Gen[A]): RichGen[A] = RichGen(g)
 
   implicit def enumToGen[A](e: Enumerable[A]): Gen[A] = e.gen
@@ -42,9 +47,9 @@ package object smartstub
     def boolean: Gen[Boolean] = Gen.oneOf(true, false)
 
     def age: Gen[Int] = Gen.frequency(
-      80 → Gen.choose(0,65),
-      15 → Gen.choose(66,80),
-      5  → Gen.choose(81,101)
+      80 -> Gen.choose(0,65),
+      15 -> Gen.choose(66,80),
+      5  -> Gen.choose(81,101)
     )
   }
 

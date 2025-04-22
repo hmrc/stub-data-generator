@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.smartstub
 
-import org.scalacheck._
-import shapeless._
-import shapeless.labelled._
-import shapeless.ops.nat.ToInt
+import org.scalacheck.*
 
 import java.time.LocalDate
+import scala.compiletime.constValue
+import org.scalacheck.Gen
+import scala.deriving.Mirror
+import scala.reflect.Selectable.reflectiveSelectable
+
 
 object AutoGen extends LowPriorityGenProviderInstances {
 
@@ -36,20 +38,56 @@ object AutoGen extends LowPriorityGenProviderInstances {
     override val gen: Gen[A] = f
   }
 
+  object GenProvider {
+    def apply[A](implicit gp: GenProvider[A]): Gen[A] = gp.gen
+
+    def instance[A](f: Gen[A]): GenProvider[A] = new GenProvider[A] {
+      override val gen: Gen[A] = f
+    }
+  }
+
+  trait TupleSize[T <: Tuple] {
+    def size: Int
+  }
+
+  object TupleSize {
+    given empty: TupleSize[EmptyTuple] with {
+      def size: Int = 0
+    }
+
+    given nonEmpty[H, T <: Tuple](using tail: TupleSize[T]): TupleSize[H *: T] with {
+      def size: Int = 1 + tail.size
+    }
+  }
+
+  // Define SumGenProvider for a tuple T (the alternatives for a sealed trait)
+  trait SumGenProvider[T <: Tuple] {
+    val gen: Gen[Int]
+  }
+
+  object SumGenProvider {
+    def apply[T <: Tuple](using sg: SumGenProvider[T]): SumGenProvider[T] = sg
+
+    // Provide an instance that uses the TupleSize to determine the number of alternatives.
+    given [T <: Tuple](using ts: TupleSize[T]): SumGenProvider[T] with {
+      override val gen: Gen[Int] = Gen.choose(0, ts.size - 1)
+    }
+  }
+
   implicit def providerUnnamed[A](implicit g: GenProvider[A]): String => GenProvider[A] = _ => g
 
   // Named types
-  implicit def providerSeqNamed[A](s: String)(implicit inner: Lazy[String => GenProvider[A]]): GenProvider[Seq[A]] =
-    instance(Gen.listOf(inner.value(s).gen))
+  implicit def providerSeqNamed[A](s: String)(implicit inner: => String => GenProvider[A]): GenProvider[Seq[A]] =
+    instance(Gen.listOf(inner(s).gen))
 
-  implicit def providerSetNamed[A](s: String)(implicit inner: Lazy[String => GenProvider[A]]): GenProvider[Set[A]] =
-    instance(Gen.listOf(inner.value(s).gen).map(_.toSet))
+  implicit def providerSetNamed[A](s: String)(implicit inner: => String => GenProvider[A]): GenProvider[Set[A]] =
+    instance(Gen.listOf(inner(s).gen).map(_.toSet))
 
-  implicit def providerVectorNamed[A](s: String)(implicit inner: Lazy[String => GenProvider[A]]): GenProvider[Vector[A]] =
-    instance(Gen.listOf(inner.value(s).gen).map(l =>l.toVector))
+  implicit def providerVectorNamed[A](s: String)(implicit inner: => String => GenProvider[A]): GenProvider[Vector[A]] =
+    instance(Gen.listOf(inner(s).gen).map(l =>l.toVector))
 
-  implicit def providerOptionNamed[A](s: String)(implicit inner: Lazy[String => GenProvider[A]]): GenProvider[Option[A]] =
-    instance(Gen.option(inner.value(s).gen))
+  implicit def providerOptionNamed[A](s: String)(implicit inner: => String => GenProvider[A]): GenProvider[Option[A]] =
+    instance(Gen.option(inner(s).gen))
 
   implicit def providerIntNamed: String => GenProvider[Int] = s => instance ({
     s.toLowerCase match {
@@ -87,52 +125,79 @@ object AutoGen extends LowPriorityGenProviderInstances {
     _ => instance(Gen.oneOf(true,false))
 
   // generic instance
-
-  implicit def providerGeneric[A, H, T]
+  implicit def providerGeneric[A]
   (implicit
-   generic: LabelledGeneric.Aux[A,T],
-   hGenProvider: Lazy[GenProvider[T]]
+   generic: Mirror.ProductOf[A],
+   hGenProvider: => GenProvider[generic.MirroredElemTypes]
   ): GenProvider[A] =
-    instance(hGenProvider.value.gen.map(generic.from))
+    instance(hGenProvider.gen.map(t => generic.fromProduct(t)))
+  extension [A](mirror: Mirror.SumOf[A])
+    def safeFromOrdinal(i: Int): A =
+      mirror.asInstanceOf[{ def fromOrdinal(i: Int): A}].fromOrdinal(i)
 
-  // HList instances
-
-  implicit val providerHNil: GenProvider[HNil] = instance(Gen.const(HNil))
-
-  implicit def providerHCons[K <: Symbol, H, T <: HList]
+  implicit def providerSum[A]
   (implicit
-   witness: Witness.Aux[K],
-   hGenProvider: Lazy[String => GenProvider[H]],
-   tGenProvider: Lazy[GenProvider[T]]
-  ): GenProvider[FieldType[K,H] :: T] = instance(
-    hGenProvider.value(witness.value.name).gen.flatMap(f =>
-      tGenProvider.value.gen.map{ t =>
-        field[K](f) :: t
+   s: Mirror.SumOf[A],
+   sumProvider: SumGenProvider[s.MirroredElemTypes]
+  ): GenProvider[A] =
+    GenProvider.instance(
+      sumProvider.gen.map { i => s.safeFromOrdinal(i)
       }
     )
-  )
+
+  // HList instances
+  type FieldType[K, V] = V
+
+  implicit def genProviderByFieldName[H](implicit gp: GenProvider[H]): String => GenProvider[H] =
+    (_: String) => gp
+
+  implicit val providerHNil: GenProvider[EmptyTuple] = instance(Gen.const(EmptyTuple))
+
+  implicit def providerHCons[K <: String & Singleton, H, T <: Tuple]
+  (implicit
+   valueOfK: ValueOf[K],
+   hGenProvider: String => GenProvider[H],
+   tGenProvider: => GenProvider[T]
+  ): GenProvider[H *: T] = {
+    val fieldName: String = valueOfK.value
+    val headGenerator = hGenProvider(fieldName).gen.flatMap(f =>
+      tGenProvider.gen.map { t =>
+        f *: t
+      }
+    )
+    instance(headGenerator)
+  }
+
+  private[smartstub] def coproductGenHelper[H, T <: Tuple](
+                                                            headGen: Gen[H *: T],
+                                                            tailGen: Gen[H *: T],
+                                                            length: Int
+                                                          ): GenProvider[H *: T] =
+    if (length == 1) instance(headGen)
+    else instance(Gen.oneOf(tailGen, headGen))
 
   // Coproduct instances
-
-  implicit def providerCNil: GenProvider[CNil] =
-    instance(Gen.delay(throw new Exception("Oh no - CNil!")))
-
-  implicit def providerCCons[K <: Symbol, H, T <: Coproduct, L <: Nat]
+  override implicit def providerCCons[K <: String & Singleton, H, T <: Tuple, L <: Int]
   (implicit
-   witness: Witness.Aux[K],
-   hGenProvider: Lazy[String => GenProvider[H]],
-   tGenProvider: Lazy[GenProvider[T]],
-   //l: shapeless.ops.coproduct.Length.Aux[H :+: T, L],
-   i: ToInt[L]
-  ): GenProvider[FieldType[K,H] :+: T] = {
-    val headGenerator = hGenProvider.value(witness.value.name).gen.map(h => Inl(field[K](h)))
+   valueOfK: ValueOf[K],
+   valueOfL: ValueOf[L],
+   hGenProvider: String => GenProvider[H],
+   tGenProvider: => GenProvider[T],
+  ): GenProvider[H *: T] = {
 
-    if(i() == 1){
-      instance(headGenerator)
-    } else {
-      instance(Gen.oneOf(tGenProvider.value.gen.map(Inr(_)),headGenerator))
+    val fieldName = valueOfK.value
+    val length = valueOfL.value
+
+    val headGenerator = hGenProvider(fieldName).gen.flatMap { h =>
+      tGenProvider.gen.map(t => h *: t)
     }
+
+    val tailGenerator: Gen[H *: T] = tGenProvider.gen.map {
+      t => t.asInstanceOf[H *: T]
+    }
+    coproductGenHelper(headGenerator, tailGenerator, valueOfL.value)
   }
+
 
 }
 
@@ -142,32 +207,39 @@ trait LowPriorityGenProviderInstances {
 
   implicit def providerUnnamed2[A](implicit g: String => GenProvider[A]): GenProvider[A] = g("")
 
-  implicit def providerHCons2[K <: Symbol, H, T <: HList]
+  implicit def providerHCons2[K <: Symbol, H, T <: Tuple, L <: Int]
   (implicit
-   hGenProvider: Lazy[GenProvider[H]],
-   tGenProvider: Lazy[GenProvider[T]]
-  ): GenProvider[FieldType[K,H] :: T] = instance(
-    hGenProvider.value.gen.flatMap(f =>
-      tGenProvider.value.gen.map{ t =>
-        field[K](f) :: t
+   valueOfK: ValueOf[K],
+   valueOfL: ValueOf[L],
+   hGenProvider: => GenProvider[H],
+   tGenProvider: => GenProvider[T]
+  ): GenProvider[H *: T] = instance(
+    hGenProvider.gen.flatMap(f =>
+      tGenProvider.gen.map { t =>
+        f *: t
       }
     )
   )
 
-  implicit def providerCCons2[K <: Symbol, H, T <: Coproduct, L <: Nat]
+  implicit def providerCCons[K <: String & Singleton, H, T <: Tuple, L <: Int]
   (implicit
-   hGenProvider: Lazy[GenProvider[H]],
-   tGenProvider: Lazy[GenProvider[T]],
-   //l: shapeless.ops.coproduct.Length.Aux[H :+: T, L],
-   i: ToInt[L]
-  ): GenProvider[FieldType[K,H] :+: T] = {
-    val headGenerator = hGenProvider.value.gen.map(h => Inl(field[K](h)))
+   valueOfK: ValueOf[K],
+   valueOfL: ValueOf[L],
+   hGenProvider: String => GenProvider[H],
+   tGenProvider: => GenProvider[T],
+  ): GenProvider[H *: T] = {
 
-    if(i() == 1){
-      instance(headGenerator)
-    } else {
-      instance(Gen.oneOf(tGenProvider.value.gen.map(Inr(_)), headGenerator))
+    val fieldName = valueOfK.value
+
+    val headGenerator = hGenProvider(fieldName).gen.flatMap { h =>
+      tGenProvider.gen.map { t =>
+        h *: t
+      }
     }
+
+    val tailGenerator: Gen[H *: T] = tGenProvider.gen.map {
+      t => t.asInstanceOf[H *: T]
+    }
+    AutoGen.coproductGenHelper(headGenerator, tailGenerator, valueOfL.value)
   }
 }
-
