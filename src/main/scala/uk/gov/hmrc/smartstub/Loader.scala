@@ -30,7 +30,7 @@ trait Loader extends Any {
       val freqTuples = nocomments.map(_.split("\t").toList).collect {
         case (f :: w :: _) => (w.collect { case c if c.isDigit => c }.toInt, const(f))
       }.toSeq
-      frequency(freqTuples: _*)
+      frequency(freqTuples*)
     } finally {
       source.close
     }

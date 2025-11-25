@@ -1,7 +1,7 @@
 
 val compileDependencies = Seq(
   "org.typelevel"  %% "cats-core"  % "2.13.0",
-  "org.scalacheck" %% "scalacheck" % "1.18.1"
+  "org.scalacheck" %% "scalacheck" % "1.19.0"
 )
 
 val testDependencies = Seq(
@@ -15,7 +15,11 @@ lazy val stubDataGenerator = Project("stub-data-generator", file("."))
   .settings(
     majorVersion := 1,
     isPublicArtefact := true,
-    scalaVersion := "3.3.4",
+    scalaVersion := "3.7.4",
     libraryDependencies ++= compileDependencies ++ testDependencies,
-    Compile / scalacOptions ++= List("-feature","-language:implicitConversions","-Wconf:msg=unused local definition:s","-Wconf:msg=unused import:s")
+    Compile / scalacOptions ++= List("-feature","-language:implicitConversions",
+      "-Wconf:msg=unused explicit parameter:silent",
+      "-Wconf:msg=unused implicit parameter:silent",
+      "-Wconf:msg=unused local definition:s,",
+      "-Wconf:msg=unused import:s")
   )

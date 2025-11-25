@@ -82,7 +82,7 @@ class MarkovChain[A](
       val table = vList.groupBy(identity).view.mapValues(_.size).toMap.map {
         case (a, count) => count -> const(a)
       }
-      k -> frequency(table.toSeq: _*)
+      k -> frequency(table.toSeq*)
     }
   }
 
